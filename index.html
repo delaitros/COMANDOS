@@ -1,1 +1,2063 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NET//HACK - Comandos de Red</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
 
+:root {
+  --green: #00ff41;
+  --green2: #00cc33;
+  --green3: #008f11;
+  --dark: #0d0d0d;
+  --darker: #050505;
+  --card: #0a1a0a;
+  --border: #00ff4133;
+  --red: #ff003c;
+  --cyan: #00ffff;
+  --yellow: #ffff00;
+  --orange: #ff6600;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--darker);
+  color: var(--green);
+  font-family: 'Share Tech Mono', monospace;
+  overflow-x: hidden;
+}
+
+/* SCANLINES */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* MATRIX CANVAS */
+#matrix-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0.04;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* NAVBAR */
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(5,5,5,0.95);
+  border-bottom: 1px solid var(--green3);
+  padding: 0 2rem;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--green);
+  text-shadow: 0 0 20px var(--green);
+  letter-spacing: 3px;
+}
+
+.logo span { color: var(--red); }
+
+.nav-links {
+  display: flex;
+  gap: 0.3rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--green3);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid transparent;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+  display: block;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--green);
+  border-color: var(--green3);
+  background: rgba(0,255,65,0.05);
+  text-shadow: 0 0 10px var(--green);
+}
+
+/* HERO */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero-content { position: relative; z-index: 2; }
+
+.glitch {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  font-weight: 900;
+  color: var(--green);
+  text-shadow: 0 0 40px var(--green), 0 0 80px var(--green3);
+  position: relative;
+  animation: glitch-anim 4s infinite;
+}
+
+@keyframes glitch-anim {
+  0%,90%,100% { text-shadow: 0 0 40px var(--green), 0 0 80px var(--green3); }
+  91% { text-shadow: -3px 0 var(--red), 3px 0 var(--cyan), 0 0 40px var(--green); transform: skewX(-2deg); }
+  93% { text-shadow: 3px 0 var(--red), -3px 0 var(--cyan), 0 0 40px var(--green); transform: skewX(2deg); }
+  95% { text-shadow: 0 0 40px var(--green); transform: skewX(0); }
+}
+
+.hero-sub {
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  color: var(--green3);
+  margin-top: 1rem;
+  letter-spacing: 4px;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  border: 1px solid var(--green3);
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--green2);
+  animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+  0%,100% { border-color: var(--green3); }
+  50% { border-color: var(--green); box-shadow: 0 0 10px var(--green3); }
+}
+
+.scroll-hint {
+  margin-top: 3rem;
+  color: var(--green3);
+  font-size: 0.8rem;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* SECTIONS */
+.section {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  color: var(--green);
+  text-shadow: 0 0 20px var(--green3);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--green3), transparent);
+}
+
+.section-desc {
+  color: var(--green3);
+  font-size: 0.85rem;
+  margin-bottom: 2.5rem;
+  letter-spacing: 1px;
+}
+
+/* OS TOGGLE */
+.os-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2rem;
+  border: 1px solid var(--green3);
+  width: fit-content;
+}
+
+.os-btn {
+  padding: 0.6rem 2rem;
+  background: transparent;
+  border: none;
+  color: var(--green3);
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+}
+
+.os-btn.active {
+  background: var(--green3);
+  color: var(--darker);
+  font-weight: bold;
+}
+
+.os-btn:hover:not(.active) {
+  background: rgba(0,255,65,0.05);
+  color: var(--green);
+}
+
+/* COMMAND CARDS GRID */
+.cmd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.cmd-card {
+  background: var(--card);
+  border: 1px solid var(--green3);
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.cmd-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--green3);
+  transition: all 0.3s;
+}
+
+.cmd-card:hover {
+  border-color: var(--green);
+  background: #0d1f0d;
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0,255,65,0.1);
+}
+
+.cmd-card:hover::before {
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+}
+
+.cmd-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  color: var(--green);
+  margin-bottom: 0.3rem;
+}
+
+.cmd-os-tag {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.tag-win { border-color: var(--cyan); color: var(--cyan); }
+.tag-linux { border-color: var(--orange); color: var(--orange); }
+.tag-both { border-color: var(--yellow); color: var(--yellow); }
+
+.cmd-short { color: var(--green2); font-size: 0.85rem; margin-bottom: 1rem; }
+
+.cmd-syntax {
+  background: #000;
+  border: 1px solid var(--green3);
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  color: var(--yellow);
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.cmd-theory {
+  color: #7a9e7a;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.cmd-theory.open { max-height: 400px; }
+
+.cmd-examples {
+  margin-top: 0.8rem;
+}
+
+.cmd-examples h4 {
+  color: var(--green3);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.example-item {
+  background: #000;
+  padding: 0.3rem 0.7rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--green2);
+  border-left: 2px solid var(--green3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.example-item:hover {
+  background: rgba(0,255,65,0.05);
+  border-left-color: var(--green);
+  color: var(--green);
+}
+
+.toggle-theory {
+  background: transparent;
+  border: 1px solid var(--green3);
+  color: var(--green3);
+  padding: 0.3rem 0.8rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+
+.toggle-theory:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(0,255,65,0.05);
+}
+
+/* TERMINAL SIMULATOR */
+#simulator {
+  background: rgba(5,5,5,0.98);
+  border-top: 1px solid var(--green3);
+  border-bottom: 1px solid var(--green3);
+}
+
+.terminal-wrapper {
+  background: #000;
+  border: 1px solid var(--green3);
+  box-shadow: 0 0 40px rgba(0,255,65,0.1);
+  overflow: hidden;
+}
+
+.terminal-bar {
+  background: #0a1a0a;
+  border-bottom: 1px solid var(--green3);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.terminal-dots { display: flex; gap: 6px; }
+.dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+}
+.dot-red { background: #ff5f56; }
+.dot-yellow { background: #ffbd2e; }
+.dot-green { background: #27c93f; }
+
+.terminal-title {
+  font-size: 0.75rem;
+  color: var(--green3);
+  letter-spacing: 2px;
+  flex: 1;
+  text-align: center;
+}
+
+.sim-os-toggle {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--green3);
+}
+
+.sim-os-btn {
+  padding: 0.2rem 0.8rem;
+  background: transparent;
+  border: none;
+  color: var(--green3);
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  transition: all 0.2s;
+}
+
+.sim-os-btn.active {
+  background: var(--green3);
+  color: #000;
+}
+
+.terminal-output {
+  padding: 1rem;
+  height: 420px;
+  overflow-y: auto;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  scrollbar-width: thin;
+  scrollbar-color: var(--green3) #000;
+}
+
+.terminal-output::-webkit-scrollbar { width: 4px; }
+.terminal-output::-webkit-scrollbar-track { background: #000; }
+.terminal-output::-webkit-scrollbar-thumb { background: var(--green3); }
+
+.t-line { display: block; white-space: pre-wrap; word-break: break-all; }
+.t-cmd { color: var(--green); }
+.t-out { color: var(--green2); }
+.t-err { color: var(--red); }
+.t-info { color: var(--cyan); }
+.t-warn { color: var(--yellow); }
+.t-prompt { color: var(--green3); }
+.t-success { color: #00ff00; }
+
+.terminal-input-row {
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  border-top: 1px solid var(--green3);
+  background: #000;
+  gap: 0.5rem;
+}
+
+.t-prompt-label {
+  color: var(--green);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+#terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--green);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.82rem;
+  outline: none;
+  caret-color: var(--green);
+}
+
+.quick-cmds {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.qcmd {
+  background: transparent;
+  border: 1px solid var(--green3);
+  color: var(--green3);
+  padding: 0.3rem 0.8rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.qcmd:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(0,255,65,0.05);
+  box-shadow: 0 0 8px rgba(0,255,65,0.2);
+}
+
+/* TP SECTION */
+.tp-header {
+  background: var(--card);
+  border: 1px solid var(--green);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.tp-header::before {
+  content: 'CONFIDENCIAL';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-25deg);
+  font-family: 'Orbitron', monospace;
+  font-size: 5rem;
+  font-weight: 900;
+  color: rgba(255,0,60,0.04);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tp-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  color: var(--green);
+  text-shadow: 0 0 20px var(--green);
+  margin-bottom: 0.5rem;
+}
+
+.tp-meta {
+  color: var(--green3);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+}
+
+.tp-score {
+  display: inline-block;
+  border: 1px solid var(--yellow);
+  color: var(--yellow);
+  padding: 0.3rem 1rem;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.tp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1.5rem;
+}
+
+.tp-card {
+  background: var(--card);
+  border: 1px solid var(--green3);
+  padding: 1.5rem;
+  position: relative;
+}
+
+.tp-num {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  background: var(--green3);
+  color: #000;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  letter-spacing: 1px;
+}
+
+.tp-pts {
+  display: inline-block;
+  border: 1px solid var(--yellow);
+  color: var(--yellow);
+  font-size: 0.7rem;
+  padding: 0.1rem 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.tp-question {
+  color: var(--green);
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+.tp-hint {
+  background: #000;
+  border-left: 3px solid var(--green3);
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.78rem;
+  color: #7a9e7a;
+  line-height: 1.5;
+}
+
+.tp-hint strong { color: var(--green2); }
+
+.tp-hint .cmd-ref {
+  display: inline-block;
+  background: #0a1a0a;
+  border: 1px solid var(--green3);
+  padding: 0.1rem 0.5rem;
+  color: var(--yellow);
+  font-size: 0.75rem;
+  margin: 0.2rem 0;
+}
+
+.tp-answer {
+  width: 100%;
+  background: #000;
+  border: 1px solid var(--green3);
+  color: var(--green);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  padding: 0.6rem;
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.tp-answer:focus { border-color: var(--green); box-shadow: 0 0 10px rgba(0,255,65,0.1); }
+
+.tp-check {
+  background: transparent;
+  border: 1px solid var(--green3);
+  color: var(--green3);
+  padding: 0.4rem 1rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.tp-check:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(0,255,65,0.05);
+}
+
+.tp-feedback {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.7rem;
+  display: none;
+}
+
+.tp-feedback.correct {
+  background: rgba(0,255,65,0.05);
+  border: 1px solid var(--green3);
+  color: var(--green);
+  display: block;
+}
+
+.tp-feedback.wrong {
+  background: rgba(255,0,60,0.05);
+  border: 1px solid var(--red);
+  color: var(--red);
+  display: block;
+}
+
+.score-board {
+  background: var(--card);
+  border: 1px solid var(--green);
+  padding: 1.5rem 2rem;
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.score-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--green);
+  text-shadow: 0 0 20px var(--green);
+}
+
+.score-label { color: var(--green3); font-size: 0.8rem; letter-spacing: 2px; }
+
+.score-bar {
+  flex: 1;
+  height: 8px;
+  background: #000;
+  border: 1px solid var(--green3);
+  min-width: 200px;
+}
+
+.score-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green3), var(--green));
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px var(--green3);
+}
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--green3);
+  padding: 2rem;
+  text-align: center;
+  color: var(--green3);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+/* SECTION DIVIDER */
+.sec-divider {
+  border: none;
+  border-top: 1px solid var(--green3);
+  margin: 0;
+  opacity: 0.3;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .cmd-grid, .tp-grid { grid-template-columns: 1fr; }
+}
+
+/* SCROLL ANIMATION */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* HIGHLIGHT */
+.hl-green { color: var(--green); }
+.hl-cyan { color: var(--cyan); }
+.hl-yellow { color: var(--yellow); }
+.hl-red { color: var(--red); }
+.hl-orange { color: var(--orange); }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-bg"></canvas>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">NET<span>/</span>/HACK</div>
+    <ul class="nav-links">
+      <li><a href="#comandos" onclick="setActive(this)">[ COMANDOS ]</a></li>
+      <li><a href="#simulator" onclick="setActive(this)">[ TERMINAL ]</a></li>
+      <li><a href="#tp" onclick="setActive(this)">[ TP PRÁCTICO ]</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="glitch">NET//HACK</div>
+    <p class="hero-sub">&gt; COMANDOS DE RED — WINDOWS &amp; LINUX &lt;</p>
+    <div class="hero-badges">
+      <div class="badge">⬡ PING</div>
+      <div class="badge">⬡ TRACERT</div>
+      <div class="badge">⬡ NMAP</div>
+      <div class="badge">⬡ NETSTAT</div>
+      <div class="badge">⬡ NSLOOKUP</div>
+      <div class="badge">⬡ ARP</div>
+    </div>
+    <p class="scroll-hint">▼ SCROLL TO ACCESS ▼</p>
+  </div>
+</section>
+
+<!-- COMANDOS SECTION -->
+<section id="comandos" class="section fade-in">
+  <div class="section-title">// ARSENAL DE COMANDOS</div>
+  <p class="section-desc">&gt; Teoría, sintaxis y ejemplos. Click en cada comando para expandir.</p>
+
+  <div class="os-toggle">
+    <button class="os-btn active" onclick="filterOS('all', this)">ALL</button>
+    <button class="os-btn" onclick="filterOS('win', this)">WINDOWS</button>
+    <button class="os-btn" onclick="filterOS('linux', this)">LINUX</button>
+  </div>
+
+  <div class="cmd-grid" id="cmd-grid">
+    <!-- Cards generated by JS -->
+  </div>
+</section>
+
+<hr class="sec-divider">
+
+<!-- TERMINAL SIMULATOR -->
+<section id="simulator">
+  <div class="section" style="padding-bottom: 2rem;">
+    <div class="section-title">// TERMINAL SIMULADA</div>
+    <p class="section-desc">&gt; Practica comandos de red en un entorno seguro. Escribe "help" para ver todos los comandos disponibles.</p>
+
+    <div class="terminal-wrapper">
+      <div class="terminal-bar">
+        <div class="terminal-dots">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+        </div>
+        <div class="terminal-title" id="term-title">WINDOWS — C:\Users\hacker&gt;</div>
+        <div class="sim-os-toggle">
+          <button class="sim-os-btn active" onclick="setSimOS('win', this)">WIN</button>
+          <button class="sim-os-btn" onclick="setSimOS('linux', this)">LINUX</button>
+        </div>
+      </div>
+      <div class="terminal-output" id="terminal-output"></div>
+      <div class="terminal-input-row">
+        <span class="t-prompt-label" id="prompt-label">C:\Users\hacker&gt;</span>
+        <input type="text" id="terminal-input" placeholder="Escribe un comando..." autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+
+    <div class="quick-cmds">
+      <span style="color:var(--green3);font-size:0.75rem;letter-spacing:2px;">QUICK:</span>
+      <button class="qcmd" onclick="quickCmd('ping 8.8.8.8')">ping 8.8.8.8</button>
+      <button class="qcmd" onclick="quickCmd('tracert google.com')">tracert</button>
+      <button class="qcmd" onclick="quickCmd('ipconfig')">ipconfig</button>
+      <button class="qcmd" onclick="quickCmd('netstat -an')">netstat</button>
+      <button class="qcmd" onclick="quickCmd('nslookup google.com')">nslookup</button>
+      <button class="qcmd" onclick="quickCmd('arp -a')">arp -a</button>
+      <button class="qcmd" onclick="quickCmd('nmap -sV 192.168.1.1')">nmap</button>
+      <button class="qcmd" onclick="quickCmd('help')">help</button>
+      <button class="qcmd" onclick="quickCmd('clear')">clear</button>
+    </div>
+  </div>
+</section>
+
+<hr class="sec-divider">
+
+<!-- TP SECTION -->
+<section id="tp" class="section fade-in">
+  <div class="tp-header">
+    <div class="tp-title">// TRABAJO PRÁCTICO</div>
+    <p class="tp-meta">COMANDOS DE REDES — WINDOWS &amp; LINUX</p>
+    <div class="tp-score">PUNTAJE TOTAL: 15 PUNTOS</div>
+  </div>
+
+  <div class="tp-grid" id="tp-grid">
+    <!-- Generated by JS -->
+  </div>
+
+  <div class="score-board">
+    <div>
+      <div class="score-num" id="score-display">0</div>
+      <div class="score-label">/ 15 PUNTOS</div>
+    </div>
+    <div style="flex:1">
+      <div class="score-label" style="margin-bottom:0.5rem;">PROGRESO</div>
+      <div class="score-bar">
+        <div class="score-fill" id="score-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div id="score-verdict" style="color:var(--green3);font-size:0.8rem;letter-spacing:1px;"></div>
+  </div>
+</section>
+
+<footer>
+  <p>NET//HACK &mdash; COMANDOS DE RED INTERACTIVOS &mdash; 2026</p>
+  <p style="margin-top:0.5rem;opacity:0.5;">[ SOLO PARA USO EDUCATIVO ]</p>
+</footer>
+
+<script>
+// ============================================================
+// MATRIX BACKGROUND
+// ============================================================
+const canvas = document.getElementById('matrix-bg');
+const ctx = canvas.getContext('2d');
+let drops = [];
+
+function initMatrix() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const cols = Math.floor(canvas.width / 18);
+  drops = Array(cols).fill(1);
+}
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff41';
+  ctx.font = '14px Share Tech Mono';
+  const chars = '01アイウエオカキクケコサシスセソタチツテトIPv4TCPUDPACKSYNRST';
+  drops.forEach((y, i) => {
+    const c = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(c, i * 18, y * 18);
+    if (y * 18 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+
+initMatrix();
+window.addEventListener('resize', initMatrix);
+setInterval(drawMatrix, 60);
+
+// ============================================================
+// COMMAND DATA
+// ============================================================
+const commands = [
+  {
+    id: 'ping',
+    name: 'PING',
+    os: 'both',
+    short: 'Verifica conectividad con un host remoto',
+    syntax_win: 'ping [opciones] <host>',
+    syntax_linux: 'ping [opciones] <host>',
+    theory: `PING (Packet Internet Groper) envía paquetes ICMP Echo Request al host destino y espera respuestas ICMP Echo Reply. Mide el tiempo de ida y vuelta (RTT - Round Trip Time) en milisegundos.
+Información que entrega:
+• Tiempo de respuesta (ms) — latencia
+• TTL (Time To Live) — saltos máximos antes de descartar el paquete
+• Paquetes enviados/recibidos/perdidos — % de pérdida
+Usos clave: verificar si un host está activo, medir latencia, detectar pérdida de paquetes, diagnosticar problemas de red.`,
+    examples: [
+      { cmd_win: 'ping 8.8.8.8', cmd_linux: 'ping 8.8.8.8', desc: 'Ping a DNS de Google' },
+      { cmd_win: 'ping -n 10 192.168.1.1', cmd_linux: 'ping -c 10 192.168.1.1', desc: '10 paquetes al gateway' },
+      { cmd_win: 'ping -t google.com', cmd_linux: 'ping google.com', desc: 'Ping continuo' },
+      { cmd_win: 'ping -l 1000 8.8.8.8', cmd_linux: 'ping -s 1000 8.8.8.8', desc: 'Paquetes de 1000 bytes' },
+    ]
+  },
+  {
+    id: 'tracert',
+    name: 'TRACERT / TRACEROUTE',
+    os: 'both',
+    short: 'Traza la ruta de paquetes hasta el destino',
+    syntax_win: 'tracert [opciones] <host>',
+    syntax_linux: 'traceroute [opciones] <host>',
+    theory: `TRACERT (Windows) / TRACEROUTE (Linux) muestra cada router (salto/hop) que atraviesa un paquete desde tu PC hasta el destino. Usa ICMP con TTL incremental: envía paquetes con TTL=1, 2, 3... Cada router decrementa el TTL y cuando llega a 0 responde con "TTL Exceeded", revelando su identidad.
+Por cada salto muestra:
+• Número de salto
+• IP o hostname del router
+• 3 mediciones de latencia (ms)
+• Asteriscos (*) si el router no responde (firewall)
+Usos: identificar dónde se cae la conexión, ver qué ISPs se usan, detectar cuellos de botella.`,
+    examples: [
+      { cmd_win: 'tracert google.com', cmd_linux: 'traceroute google.com', desc: 'Ruta a Google' },
+      { cmd_win: 'tracert -d 8.8.8.8', cmd_linux: 'traceroute -n 8.8.8.8', desc: 'Sin resolución DNS (más rápido)' },
+      { cmd_win: 'tracert -h 20 facebook.com', cmd_linux: 'traceroute -m 20 facebook.com', desc: 'Máximo 20 saltos' },
+    ]
+  },
+  {
+    id: 'ipconfig',
+    name: 'IPCONFIG / IFCONFIG / IP',
+    os: 'both',
+    short: 'Muestra y gestiona la configuración IP',
+    syntax_win: 'ipconfig [/all | /release | /renew | /flushdns]',
+    syntax_linux: 'ip addr show  |  ifconfig',
+    theory: `IPCONFIG (Windows) e IFCONFIG/IP ADDR (Linux) muestran la configuración de todas las interfaces de red del sistema.
+Información clave que muestran:
+• Dirección IPv4 e IPv6
+• Máscara de subred (Subnet Mask)
+• Gateway predeterminado (puerta de enlace)
+• Dirección MAC (solo con /all en Windows)
+• Servidor DNS
+• Estado DHCP (dinámico o estático)
+Comandos útiles Windows:
+  ipconfig /all — detalles completos
+  ipconfig /release — libera IP del DHCP
+  ipconfig /renew — solicita nueva IP al DHCP
+  ipconfig /flushdns — limpia caché DNS`,
+    examples: [
+      { cmd_win: 'ipconfig', cmd_linux: 'ip addr show', desc: 'Ver configuración de red' },
+      { cmd_win: 'ipconfig /all', cmd_linux: 'ifconfig -a', desc: 'Información completa con MAC' },
+      { cmd_win: 'ipconfig /flushdns', cmd_linux: 'sudo systemd-resolve --flush-caches', desc: 'Limpiar caché DNS' },
+      { cmd_win: 'ipconfig /renew', cmd_linux: 'sudo dhclient -r && sudo dhclient', desc: 'Renovar IP por DHCP' },
+    ]
+  },
+  {
+    id: 'netstat',
+    name: 'NETSTAT',
+    os: 'both',
+    short: 'Muestra conexiones de red activas y puertos',
+    syntax_win: 'netstat [opciones]',
+    syntax_linux: 'netstat [opciones]  |  ss [opciones]',
+    theory: `NETSTAT (Network Statistics) muestra todas las conexiones TCP/UDP activas, puertos en escucha y estadísticas de red. Es esencial para detectar conexiones sospechosas o malware.
+Estados importantes de TCP:
+• LISTENING — Puerto abierto esperando conexiones
+• ESTABLISHED — Conexión activa en curso
+• TIME_WAIT — Conexión cerrándose
+• CLOSE_WAIT — Lado remoto cerró la conexión
+Flags útiles:
+  -a : todas las conexiones y puertos
+  -n : IPs en formato numérico (sin DNS)
+  -b : muestra el proceso dueño (Windows)
+  -o : muestra el PID del proceso
+  -p : filtra por protocolo (tcp/udp)`,
+    examples: [
+      { cmd_win: 'netstat -an', cmd_linux: 'netstat -an', desc: 'Todas las conexiones numéricas' },
+      { cmd_win: 'netstat -ano', cmd_linux: 'netstat -anp', desc: 'Con PID de cada proceso' },
+      { cmd_win: 'netstat -b', cmd_linux: 'ss -tlnp', desc: 'Puertos en escucha con proceso' },
+    ]
+  },
+  {
+    id: 'nslookup',
+    name: 'NSLOOKUP / DIG',
+    os: 'both',
+    short: 'Consulta registros DNS de dominios',
+    syntax_win: 'nslookup [host] [servidor-dns]',
+    syntax_linux: 'nslookup [host]  |  dig [host] [tipo]',
+    theory: `NSLOOKUP y DIG consultan servidores DNS para resolver nombres de dominio a IPs y viceversa (DNS inverso). DIG (Domain Information Groper) es más potente y detallado.
+Tipos de registros DNS:
+• A — IPv4 del dominio
+• AAAA — IPv6 del dominio
+• MX — Servidores de correo
+• NS — Servidores de nombres
+• CNAME — Alias de dominio
+• TXT — Texto (verificaciones SPF, DKIM)
+• PTR — DNS inverso (IP → nombre)
+Usos: verificar propagación DNS, encontrar servidores de correo, auditoría de dominios, detección de CDN.`,
+    examples: [
+      { cmd_win: 'nslookup google.com', cmd_linux: 'dig google.com', desc: 'Resolución básica A record' },
+      { cmd_win: 'nslookup -type=mx gmail.com', cmd_linux: 'dig gmail.com MX', desc: 'Servidores de correo MX' },
+      { cmd_win: 'nslookup google.com 1.1.1.1', cmd_linux: 'dig @1.1.1.1 google.com', desc: 'Consultar DNS de Cloudflare' },
+      { cmd_win: 'nslookup -type=ns google.com', cmd_linux: 'dig google.com NS', desc: 'Servidores de nombres NS' },
+    ]
+  },
+  {
+    id: 'arp',
+    name: 'ARP',
+    os: 'both',
+    short: 'Gestiona la tabla ARP (IP ↔ MAC)',
+    syntax_win: 'arp -a | -d | -s',
+    syntax_linux: 'arp -a  |  ip neigh',
+    theory: `ARP (Address Resolution Protocol) traduce direcciones IP a direcciones MAC dentro de una red local (LAN). Cuando tu PC quiere enviar datos a 192.168.1.5, pregunta "¿quién tiene esta IP?" y el dispositivo responde con su MAC.
+La tabla ARP cachea estas relaciones IP↔MAC para evitar consultas repetidas.
+Tipos de entradas:
+• Dinámica — aprendida automáticamente, expira
+• Estática — configurada manualmente, permanente
+Seguridad: ARP Spoofing/Poisoning es un ataque donde un atacante envía respuestas ARP falsas para redirigir tráfico (Man-in-the-Middle).
+Comandos:
+  arp -a : muestra tabla completa
+  arp -d <IP> : elimina una entrada
+  arp -s <IP> <MAC> : agrega entrada estática`,
+    examples: [
+      { cmd_win: 'arp -a', cmd_linux: 'arp -a', desc: 'Ver toda la tabla ARP' },
+      { cmd_win: 'arp -a 192.168.1.1', cmd_linux: 'arp 192.168.1.1', desc: 'ARP del gateway' },
+      { cmd_win: 'arp -d 192.168.1.5', cmd_linux: 'sudo arp -d 192.168.1.5', desc: 'Eliminar entrada ARP' },
+    ]
+  },
+  {
+    id: 'route',
+    name: 'ROUTE / IP ROUTE',
+    os: 'both',
+    short: 'Gestiona la tabla de enrutamiento IP',
+    syntax_win: 'route PRINT | ADD | DELETE | CHANGE',
+    syntax_linux: 'ip route  |  route -n',
+    theory: `La tabla de enrutamiento define cómo el sistema decide por qué interfaz enviar paquetes hacia distintas redes. Es el "mapa de rutas" del SO.
+Componentes de una ruta:
+• Destino — red o IP de destino
+• Máscara — define el rango de red
+• Gateway — siguiente salto (router)
+• Interfaz — por dónde sale el paquete
+• Métrica — costo de la ruta (menor = preferida)
+La ruta 0.0.0.0/0 (o default) es la ruta por defecto: si ninguna otra coincide, el paquete va por ahí (al gateway de internet).
+Útil para: agregar rutas a redes privadas (VPN), solucionar problemas de enrutamiento, configurar rutas estáticas.`,
+    examples: [
+      { cmd_win: 'route PRINT', cmd_linux: 'ip route show', desc: 'Ver tabla de rutas completa' },
+      { cmd_win: 'route PRINT -4', cmd_linux: 'ip -4 route', desc: 'Solo rutas IPv4' },
+      { cmd_win: 'route ADD 10.0.0.0 MASK 255.0.0.0 192.168.1.1', cmd_linux: 'ip route add 10.0.0.0/8 via 192.168.1.1', desc: 'Agregar ruta estática' },
+    ]
+  },
+  {
+    id: 'nmap',
+    name: 'NMAP',
+    os: 'both',
+    short: 'Escáner de puertos y detección de servicios',
+    syntax_win: 'nmap [opciones] <objetivo>',
+    syntax_linux: 'nmap [opciones] <objetivo>',
+    theory: `NMAP (Network Mapper) es la herramienta de escaneo de redes más utilizada en seguridad informática. Permite descubrir hosts activos, puertos abiertos, servicios en ejecución, versiones de software y sistemas operativos.
+Tipos de escaneo principales:
+• -sS (SYN Scan) — sigiloso, no completa TCP handshake
+• -sT (TCP Connect) — escaneo completo, más detectable
+• -sU (UDP Scan) — escanea puertos UDP
+• -sV (Version Detection) — detecta versión del servicio
+• -O (OS Detection) — intenta detectar el SO
+• -A (Agresivo) — combina OS, versiones, scripts, traceroute
+⚠️ ÉTICO: Solo usar en redes propias o con autorización explícita.`,
+    examples: [
+      { cmd_win: 'nmap 192.168.1.1', cmd_linux: 'nmap 192.168.1.1', desc: 'Escaneo básico de puertos' },
+      { cmd_win: 'nmap -sV 192.168.1.1', cmd_linux: 'nmap -sV 192.168.1.1', desc: 'Detectar versiones de servicios' },
+      { cmd_win: 'nmap -sS -O 192.168.1.0/24', cmd_linux: 'nmap -sS -O 192.168.1.0/24', desc: 'Escanear toda la red local' },
+      { cmd_win: 'nmap -p 80,443,22 192.168.1.1', cmd_linux: 'nmap -p 80,443,22 192.168.1.1', desc: 'Puertos específicos' },
+    ]
+  },
+  {
+    id: 'pathping',
+    name: 'PATHPING / MTR',
+    os: 'both',
+    short: 'Combina tracert + ping con estadísticas',
+    syntax_win: 'pathping [opciones] <host>',
+    syntax_linux: 'mtr [opciones] <host>',
+    theory: `PATHPING (Windows) y MTR (Linux) combinan las capacidades de TRACERT y PING en una sola herramienta. Primero traza la ruta completa y luego envía múltiples paquetes a cada salto para calcular estadísticas de pérdida de paquetes y latencia.
+Ventajas sobre tracert:
+• Detecta routers que tienen alta pérdida de paquetes
+• Identifica con precisión dónde ocurren los problemas
+• Muestra estadísticas acumuladas por salto
+• MTR (Linux) actualiza en tiempo real
+Muy útil para: ISPs que afirman no tener problemas, detectar cuellos de botella específicos en la ruta, reportar problemas a tu proveedor.`,
+    examples: [
+      { cmd_win: 'pathping google.com', cmd_linux: 'mtr google.com', desc: 'Análisis completo de ruta' },
+      { cmd_win: 'pathping -n 8.8.8.8', cmd_linux: 'mtr -n 8.8.8.8', desc: 'Sin resolución DNS' },
+      { cmd_win: 'pathping -q 50 google.com', cmd_linux: 'mtr -c 50 google.com', desc: '50 paquetes por salto' },
+    ]
+  },
+  {
+    id: 'hostname',
+    name: 'HOSTNAME / WHOAMI',
+    os: 'both',
+    short: 'Muestra el nombre del equipo y usuario',
+    syntax_win: 'hostname  |  whoami  |  whoami /all',
+    syntax_linux: 'hostname  |  hostname -I  |  whoami',
+    theory: `HOSTNAME muestra el nombre NetBIOS/DNS del equipo en la red. Es el identificador del sistema dentro del dominio o workgroup.
+WHOAMI (Windows) muestra información del usuario actual:
+• whoami — usuario\\dominio
+• whoami /groups — grupos del usuario
+• whoami /priv — privilegios actuales
+• whoami /all — todo lo anterior
+En Linux, hostname también puede mostrar la IP del equipo con el flag -I, lo que es muy útil para conocer rápidamente todas las IPs asignadas sin usar ipconfig/ifconfig.
+En auditorías de seguridad, whoami /priv es crucial para evaluar posibilidades de escalada de privilegios.`,
+    examples: [
+      { cmd_win: 'hostname', cmd_linux: 'hostname', desc: 'Nombre del equipo' },
+      { cmd_win: 'whoami /all', cmd_linux: 'id && hostname -I', desc: 'Usuario, grupos e IPs' },
+      { cmd_win: 'ipconfig | findstr IPv4', cmd_linux: 'hostname -I', desc: 'Solo las IPs del equipo' },
+    ]
+  },
+  {
+    id: 'netsh',
+    name: 'NETSH / NMCLI',
+    os: 'both',
+    short: 'Configuración avanzada de red por línea de comandos',
+    syntax_win: 'netsh [contexto] [comando]',
+    syntax_linux: 'nmcli [opciones]',
+    theory: `NETSH (Windows) es una herramienta de administración de red muy potente. Permite configurar interfaces, firewall, WiFi, y más desde la terminal.
+Contextos principales de netsh:
+• netsh interface — gestión de interfaces
+• netsh wlan — gestión de redes inalámbricas
+• netsh advfirewall — gestión del firewall
+• netsh int ip — configuración IP
+Uso muy conocido: netsh wlan show profiles muestra todas las redes WiFi guardadas, y netsh wlan show profile [nombre] key=clear revela la contraseña en texto plano.
+NMCLI (Linux) es la interfaz CLI de NetworkManager para gestionar conexiones de red de forma persistente.`,
+    examples: [
+      { cmd_win: 'netsh wlan show profiles', cmd_linux: 'nmcli connection show', desc: 'Ver perfiles WiFi guardados' },
+      { cmd_win: 'netsh wlan show profile WiFi-casa key=clear', cmd_linux: 'nmcli -s -g 802-11-wireless-security.psk connection show WiFi-casa', desc: 'Ver contraseña WiFi guardada' },
+      { cmd_win: 'netsh interface show interface', cmd_linux: 'nmcli device status', desc: 'Estado de interfaces' },
+    ]
+  },
+  {
+    id: 'curl',
+    name: 'CURL / WGET',
+    os: 'both',
+    short: 'Transferencia de datos por protocolos HTTP/S, FTP y más',
+    syntax_win: 'curl [opciones] <URL>',
+    syntax_linux: 'curl [opciones] <URL>  |  wget <URL>',
+    theory: `CURL (Client URL) es una herramienta de transferencia de datos que soporta HTTP, HTTPS, FTP, SMTP, y más de 20 protocolos. Indispensable para pruebas de APIs y diagnósticos web.
+Usos comunes:
+• Probar APIs REST (GET, POST, PUT, DELETE)
+• Ver headers HTTP de respuesta
+• Descargar archivos
+• Enviar datos de formularios
+• Probar certificados SSL
+WGET es más simple pero muy efectivo para descargas, especialmente recursivas (mirrors de sitios).
+En ciberseguridad, curl es esencial para probar vulnerabilidades web, inyecciones, y analizar respuestas HTTP manualmente.`,
+    examples: [
+      { cmd_win: 'curl https://api.ipify.org', cmd_linux: 'curl https://api.ipify.org', desc: 'Ver mi IP pública' },
+      { cmd_win: 'curl -I https://google.com', cmd_linux: 'curl -I https://google.com', desc: 'Solo headers HTTP' },
+      { cmd_win: 'curl -X POST -d "data=test" http://ejemplo.com', cmd_linux: 'curl -X POST -d "data=test" http://ejemplo.com', desc: 'Enviar POST request' },
+    ]
+  }
+];
+
+// ============================================================
+// RENDER COMMAND CARDS
+// ============================================================
+let currentOS = 'all';
+
+function renderCards(os) {
+  const grid = document.getElementById('cmd-grid');
+  grid.innerHTML = '';
+
+  commands.forEach(cmd => {
+    if (os !== 'all' && cmd.os !== 'both' && cmd.os !== os) return;
+
+    const osTag = cmd.os === 'both'
+      ? '<span class="cmd-os-tag tag-both">WIN+LINUX</span>'
+      : cmd.os === 'win'
+        ? '<span class="cmd-os-tag tag-win">WINDOWS</span>'
+        : '<span class="cmd-os-tag tag-linux">LINUX</span>';
+
+    const examplesHTML = cmd.examples.map(ex => {
+      const displayCmd = (os === 'linux') ? ex.cmd_linux : ex.cmd_win;
+      return `<div class="example-item" onclick="quickCmd('${displayCmd}')" title="Ejecutar en terminal">&gt; ${displayCmd} <span style="color:var(--green3);font-size:0.7rem;">// ${ex.desc}</span></div>`;
+    }).join('');
+
+    const syntax = (os === 'linux') ? cmd.syntax_linux : cmd.syntax_win;
+
+    const card = document.createElement('div');
+    card.className = 'cmd-card';
+    card.innerHTML = `
+      <div class="cmd-name">${cmd.name} ${osTag}</div>
+      <div class="cmd-short">&gt; ${cmd.short}</div>
+      <div class="cmd-syntax">${syntax}</div>
+      <button class="toggle-theory" onclick="toggleTheory(this, '${cmd.id}')">[ + VER TEORÍA ]</button>
+      <div class="cmd-theory" id="theory-${cmd.id}">
+        ${cmd.theory.split('\n').map(l => `<p style="margin-bottom:0.4rem">${l}</p>`).join('')}
+        <div class="cmd-examples" style="margin-top:1rem">
+          <h4>&gt; EJEMPLOS (click para ejecutar):</h4>
+          ${examplesHTML}
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function filterOS(os, btn) {
+  currentOS = os;
+  document.querySelectorAll('.os-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards(os);
+}
+
+function toggleTheory(btn, id) {
+  const el = document.getElementById('theory-' + id);
+  el.classList.toggle('open');
+  btn.textContent = el.classList.contains('open') ? '[ - OCULTAR TEORÍA ]' : '[ + VER TEORÍA ]';
+}
+
+renderCards('all');
+
+// ============================================================
+// TERMINAL SIMULATOR
+// ============================================================
+let simOS = 'win';
+let cmdHistory = [];
+let histIdx = -1;
+
+const output = document.getElementById('terminal-output');
+const input = document.getElementById('terminal-input');
+const promptLabel = document.getElementById('prompt-label');
+const termTitle = document.getElementById('term-title');
+
+function setSimOS(os, btn) {
+  simOS = os;
+  document.querySelectorAll('.sim-os-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const prompt = os === 'win' ? 'C:\\Users\\hacker>' : 'root@kali:~#';
+  promptLabel.textContent = prompt;
+  termTitle.textContent = os === 'win' ? 'WINDOWS — C:\\Users\\hacker>' : 'KALI LINUX — root@kali:~#';
+  addLine('t-info', `[*] Cambiado a modo ${os === 'win' ? 'WINDOWS' : 'LINUX'}. Escribe "help" para ver comandos.`);
+}
+
+function getPrompt() {
+  return simOS === 'win' ? 'C:\\Users\\hacker>' : 'root@kali:~#';
+}
+
+function addLine(cls, text) {
+  const line = document.createElement('span');
+  line.className = `t-line ${cls}`;
+  line.innerHTML = text;
+  output.appendChild(line);
+  output.scrollTop = output.scrollHeight;
+}
+
+function addLines(lines) {
+  lines.forEach(([cls, text]) => addLine(cls, text));
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function typeLines(lines, delay = 30) {
+  for (const [cls, text] of lines) {
+    await sleep(delay);
+    addLine(cls, text);
+  }
+  output.scrollTop = output.scrollHeight;
+}
+
+// Fake network data
+const fakeHosts = {
+  '8.8.8.8': { hostname: 'dns.google', ttl: 118 },
+  '1.1.1.1': { hostname: 'one.one.one.one', ttl: 56 },
+  '192.168.1.1': { hostname: 'router.local', ttl: 64 },
+  '192.168.1.100': { hostname: 'hacker-pc.local', ttl: 128 },
+  'google.com': { ip: '142.250.184.78', ttl: 118 },
+  'github.com': { ip: '140.82.114.4', ttl: 54 },
+  'facebook.com': { ip: '157.240.11.35', ttl: 58 },
+  'youtube.com': { ip: '142.250.65.110', ttl: 118 },
+};
+
+function randMs(min, max) { return Math.floor(Math.random() * (max - min) + min); }
+function randIP() { return `${randMs(1,254)}.${randMs(1,254)}.${randMs(1,254)}.${randMs(1,254)}`; }
+
+const ipconfigOutput_win = [
+  ['t-info', 'Configuración IP de Windows'],
+  ['t-out', ''],
+  ['t-out', 'Adaptador Ethernet Ethernet:'],
+  ['t-out', ''],
+  ['t-warn', '   Sufijo DNS específico para la conexión. : local'],
+  ['t-out', '   Descripción. . . . . . . . . . . : Realtek PCIe GbE Family Controller'],
+  ['t-out', '   Dirección física. . . . . . . . . : A4-B1-C7-3F-22-09'],
+  ['t-success', '   Dirección IPv4. . . . . . . . . . : 192.168.1.100'],
+  ['t-out', '   Máscara de subred . . . . . . . . : 255.255.255.0'],
+  ['t-out', '   Puerta de enlace predeterminada . : 192.168.1.1'],
+  ['t-out', ''],
+  ['t-out', 'Adaptador de túnel Teredo Tunneling Pseudo-Interface:'],
+  ['t-out', ''],
+  ['t-out', '   Estado de los medios. . . . . . . : medios desconectados'],
+];
+
+const ipconfigOutput_linux = [
+  ['t-out', 'eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500'],
+  ['t-success', '        inet 192.168.1.100  netmask 255.255.255.0  broadcast 192.168.1.255'],
+  ['t-out', '        inet6 fe80::a6b1:c7ff:fe3f:2209  prefixlen 64  scopeid 0x20<link>'],
+  ['t-out', '        ether a4:b1:c7:3f:22:09  txqueuelen 1000  (Ethernet)'],
+  ['t-out', '        RX packets 48291  bytes 62415882 (59.5 MiB)'],
+  ['t-out', '        TX packets 31042  bytes 4271892 (4.0 MiB)'],
+  ['t-out', ''],
+  ['t-out', 'lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536'],
+  ['t-out', '        inet 127.0.0.1  netmask 255.0.0.0'],
+];
+
+async function runCommand(raw) {
+  const cmd = raw.trim();
+  if (!cmd) return;
+
+  cmdHistory.unshift(cmd);
+  histIdx = -1;
+
+  addLine('t-prompt', `${getPrompt()} ${cmd}`);
+
+  const lower = cmd.toLowerCase();
+  const parts = lower.split(/\s+/);
+  const base = parts[0];
+
+  if (base === 'clear' || base === 'cls') {
+    output.innerHTML = '';
+    return;
+  }
+
+  if (base === 'help') {
+    addLines([
+      ['t-info', '╔══════════════════════════════════════════════════════╗'],
+      ['t-info', '║           NET//HACK — COMANDOS DISPONIBLES           ║'],
+      ['t-info', '╚══════════════════════════════════════════════════════╝'],
+      ['t-out', ''],
+      ['t-warn', '  [ DIAGNÓSTICO ]'],
+      ['t-out', '  ping <host>          — Verificar conectividad'],
+      ['t-out', '  tracert <host>       — Trazar ruta (Win: tracert, Linux: traceroute)'],
+      ['t-out', '  pathping <host>      — Estadísticas por salto'],
+      ['t-out', ''],
+      ['t-warn', '  [ CONFIGURACIÓN ]'],
+      ['t-out', '  ipconfig / ifconfig  — Ver configuración de red'],
+      ['t-out', '  ipconfig /all        — Detalles completos con MAC'],
+      ['t-out', '  ipconfig /flushdns   — Limpiar caché DNS'],
+      ['t-out', '  route print          — Ver tabla de enrutamiento'],
+      ['t-out', ''],
+      ['t-warn', '  [ CONEXIONES ]'],
+      ['t-out', '  netstat -an          — Conexiones activas'],
+      ['t-out', '  netstat -ano         — Conexiones con PID'],
+      ['t-out', '  arp -a               — Tabla ARP'],
+      ['t-out', ''],
+      ['t-warn', '  [ DNS ]'],
+      ['t-out', '  nslookup <host>      — Resolver DNS'],
+      ['t-out', '  nslookup -type=mx    — Registros MX'],
+      ['t-out', ''],
+      ['t-warn', '  [ ESCANEO ]'],
+      ['t-out', '  nmap <host>          — Escaneo de puertos básico'],
+      ['t-out', '  nmap -sV <host>      — Detección de versiones'],
+      ['t-out', '  nmap -sS <red>/24    — Escaneo SYN sigiloso'],
+      ['t-out', ''],
+      ['t-warn', '  [ OTROS ]'],
+      ['t-out', '  hostname             — Nombre del equipo'],
+      ['t-out', '  whoami               — Usuario actual'],
+      ['t-out', '  curl <url>           — Petición HTTP'],
+      ['t-out', '  clear / cls          — Limpiar terminal'],
+    ]);
+    return;
+  }
+
+  // PING
+  if (base === 'ping') {
+    const target = parts[1] || '127.0.0.1';
+    const info = fakeHosts[target] || {};
+    const ip = info.ip || target;
+    const ttl = info.ttl || randMs(50, 130);
+    const count = simOS === 'win' ? 4 : 5;
+    const countFlag = parts.indexOf('-n') !== -1 ? parseInt(parts[parts.indexOf('-n')+1]) || 4 :
+                      parts.indexOf('-c') !== -1 ? parseInt(parts[parts.indexOf('-c')+1]) || 4 : count;
+    const n = Math.min(countFlag, 8);
+
+    addLine('t-info', `Haciendo ping a ${target} [${ip}] con 32 bytes de datos:`);
+    for (let i = 0; i < n; i++) {
+      await sleep(400);
+      const ms = randMs(8, 65);
+      const lost = Math.random() < 0.05;
+      if (lost) {
+        addLine('t-err', `Tiempo de espera agotado para esta solicitud.`);
+      } else {
+        addLine('t-success', `Respuesta desde ${ip}: bytes=32 tiempo=${ms}ms TTL=${ttl}`);
+      }
+    }
+    const ms1 = randMs(8,30), ms2 = randMs(30,65), ms3 = randMs(15,45);
+    addLine('t-out', '');
+    addLine('t-info', `Estadísticas de ping para ${ip}:`);
+    addLine('t-out', `    Paquetes: enviados = ${n}, recibidos = ${n}, perdidos = 0 (0% perdidos)`);
+    addLine('t-info', 'Tiempos aproximados de ida y vuelta en milisegundos:');
+    addLine('t-out', `    Mínimo = ${ms1}ms, Máximo = ${ms2}ms, Media = ${ms3}ms`);
+    return;
+  }
+
+  // TRACERT / TRACEROUTE
+  if (base === 'tracert' || base === 'traceroute') {
+    const target = parts[1] || 'google.com';
+    const info = fakeHosts[target] || {};
+    const destIP = info.ip || target;
+
+    addLine('t-info', `Traza la ruta a ${target} [${destIP}]`);
+    addLine('t-info', `Número máximo de saltos: 30`);
+    addLine('t-out', '');
+
+    const hops = [
+      ['192.168.1.1', 'router.home.local'],
+      ['10.10.0.1', 'cgnat.isp.net'],
+      ['200.51.12.1', 'bue-core1.isp.net.ar'],
+      ['200.51.12.9', 'bue-core2.isp.net.ar'],
+      ['72.14.215.1', 'sao-edge.google.com'],
+      ['142.251.60.1', 'lax17s54-in-f1.1e100.net'],
+      [destIP, target],
+    ];
+
+    for (let i = 0; i < hops.length; i++) {
+      await sleep(300);
+      const [ip, host] = hops[i];
+      const ms1 = randMs(2, 100), ms2 = randMs(2, 100), ms3 = randMs(2, 100);
+      addLine('t-out', `  ${String(i+1).padStart(2,' ')}  ${String(ms1).padStart(4,' ')} ms  ${String(ms2).padStart(4,' ')} ms  ${String(ms3).padStart(4,' ')} ms  ${ip} [${host}]`);
+    }
+    addLine('t-out', '');
+    addLine('t-success', 'Traza completa.');
+    return;
+  }
+
+  // IPCONFIG / IFCONFIG / IP ADDR
+  if (base === 'ipconfig' || base === 'ifconfig') {
+    const flag = parts[1];
+    if (flag === '/all') {
+      addLines(ipconfigOutput_win);
+      addLine('t-out', '   Servidores DNS . . . . . . . . . : 8.8.8.8');
+      addLine('t-out', '                                       8.8.4.4');
+      addLine('t-out', '   Concesión obtenida. . . . . . . : lunes, 12 de mayo de 2026 8:00:00');
+    } else if (flag === '/flushdns') {
+      await sleep(500);
+      addLine('t-success', 'Caché de resolución de DNS vacíada correctamente.');
+    } else if (flag === '/renew') {
+      await sleep(800);
+      addLine('t-info', '[*] Liberando configuración IP...');
+      await sleep(500);
+      addLine('t-info', '[*] Obteniendo nueva IP del servidor DHCP...');
+      await sleep(600);
+      addLine('t-success', '[+] IP renovada: 192.168.1.101');
+    } else if (flag === '/release') {
+      await sleep(400);
+      addLine('t-warn', '[-] IP liberada. Sin conexión a internet hasta renovar.');
+    } else {
+      const lines = simOS === 'linux' ? ipconfigOutput_linux : ipconfigOutput_win;
+      addLines(lines);
+    }
+    return;
+  }
+
+  if (lower.startsWith('ip addr') || lower === 'ip a') {
+    addLines(ipconfigOutput_linux);
+    return;
+  }
+
+  // NETSTAT
+  if (base === 'netstat') {
+    addLine('t-out', '');
+    addLine('t-info', 'Conexiones activas');
+    addLine('t-out', '');
+    addLine('t-warn', '  Proto  Dirección local          Dirección remota        Estado');
+    const conns = [
+      ['TCP', '192.168.1.100:49823', '142.250.184.78:443', 'ESTABLISHED'],
+      ['TCP', '192.168.1.100:49891', '140.82.114.4:443', 'ESTABLISHED'],
+      ['TCP', '192.168.1.100:80', '0.0.0.0:0', 'LISTENING'],
+      ['TCP', '192.168.1.100:443', '0.0.0.0:0', 'LISTENING'],
+      ['TCP', '192.168.1.100:22', '0.0.0.0:0', 'LISTENING'],
+      ['TCP', '192.168.1.100:50123', '157.240.11.35:443', 'TIME_WAIT'],
+      ['UDP', '0.0.0.0:53', '*:*', ''],
+      ['UDP', '0.0.0.0:67', '*:*', ''],
+    ];
+    for (const [proto, local, rem, state] of conns) {
+      const cls = state === 'ESTABLISHED' ? 't-success' : state === 'LISTENING' ? 't-warn' : 't-out';
+      addLine(cls, `  ${proto.padEnd(6)} ${local.padEnd(24)} ${rem.padEnd(24)} ${state}`);
+    }
+    return;
+  }
+
+  // NSLOOKUP
+  if (base === 'nslookup') {
+    const target = parts[1] || 'google.com';
+    const info = fakeHosts[target] || {};
+    const ip = info.ip || randIP();
+    const typeFlag = parts.indexOf('-type') !== -1 ? parts[parts.indexOf('-type')+1] : 'a';
+
+    addLine('t-info', `Servidor: dns.google`);
+    addLine('t-info', `Address: 8.8.8.8`);
+    addLine('t-out', '');
+
+    if (lower.includes('-type=mx') || lower.includes('mx')) {
+      addLine('t-warn', `Respuesta no autoritativa:`);
+      addLine('t-out', `${target}    MX preference = 10, mail exchanger = aspmx.l.google.com`);
+      addLine('t-out', `${target}    MX preference = 20, mail exchanger = alt1.aspmx.l.google.com`);
+      addLine('t-out', `${target}    MX preference = 30, mail exchanger = alt2.aspmx.l.google.com`);
+    } else if (lower.includes('-type=ns') || lower.includes('ns')) {
+      addLine('t-warn', `Respuesta no autoritativa:`);
+      addLine('t-out', `${target}    nameserver = ns1.google.com`);
+      addLine('t-out', `${target}    nameserver = ns2.google.com`);
+      addLine('t-out', `${target}    nameserver = ns3.google.com`);
+      addLine('t-out', `${target}    nameserver = ns4.google.com`);
+    } else {
+      addLine('t-warn', `Respuesta no autoritativa:`);
+      addLine('t-out', `Nombre:  ${target}`);
+      addLine('t-success', `Address: ${ip}`);
+    }
+    return;
+  }
+
+  // ARP
+  if (base === 'arp') {
+    addLine('t-out', '');
+    addLine('t-info', `Interfaz: 192.168.1.100 --- 0x4`);
+    addLine('t-out', '  Dirección de Internet      Dirección física      Tipo');
+    addLines([
+      ['t-success', '  192.168.1.1              a4-b1-c7-3f-22-01     dinámico'],
+      ['t-out',     '  192.168.1.102            b8-27-eb-12-34-56     dinámico'],
+      ['t-out',     '  192.168.1.103            dc-a6-32-9f-aa-11     dinámico'],
+      ['t-warn',    '  192.168.1.255            ff-ff-ff-ff-ff-ff     estático'],
+      ['t-warn',    '  224.0.0.22               01-00-5e-00-00-16     estático'],
+      ['t-out',     '  255.255.255.255          ff-ff-ff-ff-ff-ff     estático'],
+    ]);
+    return;
+  }
+
+  // ROUTE
+  if (base === 'route') {
+    addLine('t-out', '');
+    addLine('t-info', '============================================================================');
+    addLine('t-info', 'Lista de interfaces');
+    addLine('t-out', '  4...a4 b1 c7 3f 22 09 ......Realtek PCIe GbE Family Controller');
+    addLine('t-out', '  1...........................Software Loopback Interface 1');
+    addLine('t-out', '');
+    addLine('t-info', 'Rutas activas IPv4:');
+    addLine('t-warn', '  Destino de red    Máscara de red    Puerta de enlace    Interfaz    Métrica');
+    addLines([
+      ['t-out',     '          0.0.0.0          0.0.0.0       192.168.1.1    192.168.1.100       25'],
+      ['t-out',     '        127.0.0.0        255.0.0.0         En vínculo         127.0.0.1      331'],
+      ['t-success', '      192.168.1.0    255.255.255.0         En vínculo    192.168.1.100      281'],
+      ['t-out',     '    192.168.1.100  255.255.255.255         En vínculo    192.168.1.100      281'],
+      ['t-out',     '      224.0.0.0        240.0.0.0         En vínculo    192.168.1.100      281'],
+      ['t-out',     '  255.255.255.255  255.255.255.255         En vínculo    192.168.1.100      281'],
+    ]);
+    addLine('t-out', '');
+    addLine('t-info', 'Puerta de enlace predeterminada: 192.168.1.1');
+    return;
+  }
+
+  // NMAP
+  if (base === 'nmap') {
+    const target = parts[parts.length - 1];
+    const isVersion = lower.includes('-sv');
+    const isStealth = lower.includes('-ss');
+    const isSubnet = target.includes('/');
+
+    addLine('t-info', `Starting Nmap 7.94 ( https://nmap.org )`);
+    addLine('t-warn', `[*] Iniciando escaneo de ${target}...`);
+
+    if (isSubnet) {
+      await sleep(800);
+      addLine('t-info', 'Nmap scan report for 192.168.1.1 (router.local)');
+      addLine('t-out', 'Host is up (0.002s latency).');
+      addLines([['t-success','PORT     STATE SERVICE'],['t-out','80/tcp   open  http'],['t-out','443/tcp  open  https'],['t-out','22/tcp   open  ssh']]);
+      await sleep(400);
+      addLine('t-info', 'Nmap scan report for 192.168.1.100 (hacker-pc.local)');
+      addLine('t-out', 'Host is up (0.001s latency).');
+      addLines([['t-success','PORT     STATE SERVICE'],['t-out','22/tcp   open  ssh'],['t-out','8080/tcp open  http-proxy']]);
+      await sleep(300);
+      addLine('t-info', 'Nmap scan report for 192.168.1.102');
+      addLine('t-out', 'Host is up (0.015s latency).');
+      addLines([['t-success','PORT     STATE  SERVICE'],['t-out','80/tcp   open   http'],['t-out','21/tcp   closed ftp']]);
+      addLine('t-out', '');
+      addLine('t-success', `Nmap done: 254 IP addresses (3 hosts up) scanned in 12.43 seconds`);
+    } else {
+      await sleep(600);
+      addLine('t-info', `Nmap scan report for ${target}`);
+      addLine('t-out', 'Host is up (0.023s latency).');
+      addLine('t-out', 'Not shown: 995 filtered tcp ports (no-response)');
+      addLine('t-success', 'PORT     STATE SERVICE' + (isVersion ? '         VERSION' : ''));
+      const services = [
+        ['22/tcp',  'open', 'ssh',   'OpenSSH 8.9p1 Ubuntu'],
+        ['80/tcp',  'open', 'http',  'nginx 1.22.0'],
+        ['443/tcp', 'open', 'https', 'nginx 1.22.0'],
+        ['3306/tcp','open', 'mysql', 'MySQL 8.0.32'],
+        ['8443/tcp','open', 'https', 'Apache Tomcat 9.0'],
+      ];
+      for (const [port, state, svc, ver] of services) {
+        const line = `${port.padEnd(9)}${state.padEnd(7)}${svc.padEnd(8)}${isVersion ? ver : ''}`;
+        addLine('t-out', line);
+      }
+      if (isVersion) {
+        addLine('t-out', '');
+        addLine('t-warn', 'Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel');
+      }
+      addLine('t-out', '');
+      addLine('t-success', `Nmap done: 1 IP address (1 host up) scanned in 8.21 seconds`);
+    }
+    return;
+  }
+
+  // PATHPING / MTR
+  if (base === 'pathping' || base === 'mtr') {
+    const target = parts[1] || 'google.com';
+    addLine('t-info', `Traza la ruta a ${target} mediante 30 saltos como máximo.`);
+    addLine('t-out', '');
+    const hops = ['192.168.1.1', '10.10.0.1', '200.51.12.1', '72.14.215.1', '142.250.184.78'];
+    for (let i = 0; i < hops.length; i++) {
+      addLine('t-out', `  ${i}  ${hops[i]}`);
+    }
+    addLine('t-out', '');
+    addLine('t-info', 'Calculando estadísticas durante 125 segundos...');
+    await sleep(800);
+    addLine('t-out', '          Origen a aquí   Este nodo/vínculo');
+    addLine('t-warn', 'Salto  RTT    Perdido/Env = Pct  Perdido/Env = Pct  Dirección');
+    for (let i = 0; i < hops.length; i++) {
+      const rtt = randMs(2, 80);
+      addLine('t-out', `  ${i+1}   ${rtt}ms   0/ 100 =  0%    0/ 100 =  0%  ${hops[i]}`);
+    }
+    addLine('t-out', '');
+    addLine('t-success', 'Traza completa.');
+    return;
+  }
+
+  // HOSTNAME
+  if (base === 'hostname') {
+    addLine('t-success', 'HACKER-PC');
+    return;
+  }
+
+  // WHOAMI
+  if (base === 'whoami') {
+    if (lower.includes('/all')) {
+      addLine('t-info', 'Información del usuario');
+      addLine('t-out', 'Nombre de usuario: HACKER-PC\\hacker');
+      addLine('t-out', 'SID: S-1-5-21-3623811015-3361044348-30300820-1013');
+      addLine('t-out', '');
+      addLine('t-info', 'Información de grupo');
+      addLines([
+        ['t-out', 'BUILTIN\\Usuarios        Grupo incorporado  Habilitado por defecto'],
+        ['t-out', 'BUILTIN\\Administradores Grupo incorporado  Habilitado por defecto'],
+        ['t-warn', 'NT AUTHORITY\\INTERACTIVE Grupo reservado   Habilitado por defecto'],
+      ]);
+      addLine('t-out', '');
+      addLine('t-info', 'Privilegios');
+      addLines([
+        ['t-warn', 'SeShutdownPrivilege            Apagar el sistema            Deshabilitado'],
+        ['t-success', 'SeDebugPrivilege               Depurar programas            Habilitado'],
+        ['t-success', 'SeChangeNotifyPrivilege        Omitir comprobación...       Habilitado'],
+        ['t-warn', 'SeImpersonatePrivilege         Imp. cliente tras autent.    Habilitado'],
+      ]);
+    } else if (lower.includes('/priv')) {
+      addLine('t-info', 'Información de privilegios');
+      addLines([
+        ['t-warn', 'Nombre de privilegio             Descripción                  Estado'],
+        ['t-out',  '===========================      ========================     ==========='],
+        ['t-success', 'SeDebugPrivilege               Depurar programas            Habilitado'],
+        ['t-success', 'SeImpersonatePrivilege         Impersonar cliente           Habilitado'],
+        ['t-warn', 'SeShutdownPrivilege            Apagar el sistema            Deshabilitado'],
+      ]);
+    } else {
+      addLine('t-success', simOS === 'win' ? 'HACKER-PC\\hacker' : 'root');
+    }
+    return;
+  }
+
+  // CURL
+  if (base === 'curl' || base === 'wget') {
+    const url = parts[1] || '';
+    if (lower.includes('ipify') || lower.includes('ip')) {
+      await sleep(400);
+      addLine('t-success', '203.0.113.42');
+    } else if (lower.includes('-i') || lower.includes('-head')) {
+      await sleep(500);
+      addLines([
+        ['t-info', 'HTTP/2 200'],
+        ['t-out', 'date: Mon, 12 May 2026 12:00:00 GMT'],
+        ['t-out', 'content-type: text/html; charset=UTF-8'],
+        ['t-out', 'server: gws'],
+        ['t-warn', 'x-xss-protection: 0'],
+        ['t-out', 'x-frame-options: SAMEORIGIN'],
+        ['t-warn', 'strict-transport-security: max-age=31536000; includeSubDomains'],
+        ['t-out', 'cache-control: private, max-age=0'],
+      ]);
+    } else {
+      await sleep(500);
+      addLine('t-out', `  % Total    % Received  Xferd  Average Speed  Time`);
+      addLine('t-out', `100  1429  100  1429    0     0   9823      0 --:--:-- --:--:--`);
+      addLine('t-success', `[+] Respuesta recibida de ${url || 'servidor'}`);
+    }
+    return;
+  }
+
+  // NETSH
+  if (base === 'netsh') {
+    if (lower.includes('wlan show profiles')) {
+      addLine('t-info', 'Perfiles de usuario en la interfaz wlan0:');
+      addLine('t-out', '');
+      addLine('t-warn', 'Perfiles de todos los usuarios');
+      addLines([
+        ['t-out', '    Perfil de todos los usuarios : WiFi-Casa'],
+        ['t-out', '    Perfil de todos los usuarios : Vecino_Gratis'],
+        ['t-out', '    Perfil de todos los usuarios : Trabajo_5G'],
+        ['t-out', '    Perfil de todos los usuarios : iPhone_de_Mama'],
+      ]);
+    } else if (lower.includes('key=clear')) {
+      addLine('t-warn', 'Contenido del perfil en la interfaz wlan0:');
+      addLine('t-out', '');
+      addLine('t-out', 'Información de autenticación:');
+      addLines([
+        ['t-out', '    Tipo de autenticación  : WPA2-Personal'],
+        ['t-out', '    Tipo de cifrado       : CCMP'],
+        ['t-success', '    Contenido de clave    : M1Contr4seña!2026'],
+      ]);
+    } else {
+      addLine('t-warn', 'Uso: netsh [contexto] [comando]');
+      addLine('t-out', 'Contextos: wlan, interface, advfirewall, int ip');
+      addLine('t-out', 'Ejemplo: netsh wlan show profiles');
+    }
+    return;
+  }
+
+  // IP ROUTE
+  if (lower.startsWith('ip route') || lower.startsWith('ip -4 route')) {
+    addLines([
+      ['t-success', 'default via 192.168.1.1 dev eth0 proto dhcp src 192.168.1.100 metric 100'],
+      ['t-out', '10.0.0.0/8 via 10.10.0.1 dev eth0'],
+      ['t-out', '172.16.0.0/12 via 192.168.1.1 dev eth0'],
+      ['t-out', '192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.100'],
+      ['t-out', '127.0.0.0/8 dev lo proto kernel scope link src 127.0.0.1'],
+    ]);
+    return;
+  }
+
+  // DIG
+  if (base === 'dig') {
+    const target = parts[1] || 'google.com';
+    const type = parts[2] || 'A';
+    const info = fakeHosts[target] || {};
+    const ip = info.ip || randIP();
+    addLine('t-info', `; <<>> DiG 9.18.1 <<>> ${target} ${type}`);
+    addLine('t-out', ';; global options: +cmd');
+    addLine('t-out', ';; Got answer:');
+    addLine('t-out', ';; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 42183');
+    addLine('t-out', '');
+    addLine('t-warn', ';; ANSWER SECTION:');
+    if (type.toLowerCase() === 'mx') {
+      addLine('t-out', `${target}.  300  IN  MX  10 aspmx.l.google.com.`);
+      addLine('t-out', `${target}.  300  IN  MX  20 alt1.aspmx.l.google.com.`);
+    } else {
+      addLine('t-success', `${target}.  300  IN  A  ${ip}`);
+    }
+    addLine('t-out', '');
+    addLine('t-out', `;; Query time: ${randMs(5,50)} msec`);
+    addLine('t-out', ';; SERVER: 8.8.8.8#53(8.8.8.8)');
+    return;
+  }
+
+  // UNKNOWN
+  addLine('t-err', `'${parts[0]}' no se reconoce como un comando interno o externo.`);
+  addLine('t-warn', 'Escribe "help" para ver los comandos disponibles.');
+}
+
+function quickCmd(cmd) {
+  input.value = cmd;
+  input.focus();
+  handleInput();
+}
+
+function handleInput() {
+  const cmd = input.value.trim();
+  if (!cmd) return;
+  input.value = '';
+  runCommand(cmd);
+}
+
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    handleInput();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (histIdx < cmdHistory.length - 1) histIdx++;
+    input.value = cmdHistory[histIdx] || '';
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (histIdx > 0) histIdx--;
+    else { histIdx = -1; input.value = ''; return; }
+    input.value = cmdHistory[histIdx] || '';
+  }
+});
+
+// Boot message
+(async () => {
+  await sleep(300);
+  addLines([
+    ['t-info',    '╔══════════════════════════════════════════════════════════╗'],
+    ['t-info',    '║            NET//HACK TERMINAL v2.6 — SIMULADOR           ║'],
+    ['t-info',    '╚══════════════════════════════════════════════════════════╝'],
+    ['t-out',     ''],
+    ['t-warn',    '[*] Sistema operativo: Windows 11 Pro (simulado)'],
+    ['t-out',     '[*] Adaptador de red: Realtek PCIe GbE — 192.168.1.100'],
+    ['t-out',     '[*] Gateway: 192.168.1.1'],
+    ['t-success', '[+] Conexión a internet: ACTIVA'],
+    ['t-out',     ''],
+    ['t-info',    '[?] Escribe "help" para ver todos los comandos disponibles.'],
+    ['t-out',     ''],
+  ]);
+})();
+
+// ============================================================
+// TP DATA & RENDER
+// ============================================================
+const tpQuestions = [
+  {
+    num: 1, pts: 1,
+    q: '¿Cuál es el comando para verificar si un host está activo en Windows?',
+    hint: 'Este comando envía paquetes ICMP Echo Request. Se llama igual en Windows y Linux.',
+    hint2: 'Comando: <span class="cmd-ref">ping &lt;host&gt;</span> — por ej: ping 8.8.8.8',
+    answers: ['ping', 'ping 8.8.8.8', 'ping google.com', 'ping 192.168.1.1'],
+    feedback: '✓ CORRECTO. PING envía paquetes ICMP al destino para verificar conectividad y medir latencia (RTT).'
+  },
+  {
+    num: 2, pts: 2,
+    q: 'Escribe el comando para ver la configuración IP completa (con MAC, DNS y estado DHCP) en Windows.',
+    hint: 'Es una variante de ipconfig con un flag especial para mostrar TODA la información.',
+    hint2: 'Comando: <span class="cmd-ref">ipconfig /all</span> — el flag /all muestra detalles completos.',
+    answers: ['ipconfig /all', 'ipconfig/all'],
+    feedback: '✓ CORRECTO. ipconfig /all muestra dirección MAC, servidores DNS, estado DHCP y toda la info de red.'
+  },
+  {
+    num: 3, pts: 1,
+    q: '¿Cuál es la diferencia entre tracert (Windows) y traceroute (Linux)?',
+    hint: 'Ambos hacen lo mismo: trazar la ruta de paquetes. La diferencia es el protocolo que usan por defecto.',
+    hint2: '<strong>Windows (tracert)</strong>: usa ICMP. <strong>Linux (traceroute)</strong>: usa UDP por defecto (puede usar ICMP con -I).',
+    answers: ['tracert usa icmp y traceroute usa udp', 'windows usa icmp linux usa udp', 'tracert icmp traceroute udp', 'uno usa icmp y el otro udp', 'tracert es para windows y traceroute para linux'],
+    feedback: '✓ CORRECTO. tracert (Windows) usa ICMP. traceroute (Linux) usa UDP por defecto. Ambos trazan la ruta revelando cada router intermedio.'
+  },
+  {
+    num: 4, pts: 1,
+    q: 'Escribe el comando Linux para ver las IPs asignadas a todas las interfaces de red.',
+    hint: 'Es el equivalente de ipconfig en Linux. Hay dos formas válidas: el comando moderno con "ip" y el clásico.',
+    hint2: 'Comandos: <span class="cmd-ref">ip addr show</span> o <span class="cmd-ref">ifconfig -a</span>',
+    answers: ['ip addr show', 'ip addr', 'ip a', 'ifconfig', 'ifconfig -a'],
+    feedback: '✓ CORRECTO. En Linux, "ip addr show" (o "ip a") es el comando moderno para ver configuración de red. ifconfig también es válido.'
+  },
+  {
+    num: 5, pts: 1,
+    q: '¿Para qué sirve el comando "netstat -an" y qué información muestra?',
+    hint: 'Netstat muestra el estado de las conexiones de red. El flag -a muestra todas y -n evita resolver DNS.',
+    hint2: 'Muestra: <strong>conexiones activas</strong> (ESTABLISHED), <strong>puertos en escucha</strong> (LISTENING), IPs en formato numérico.',
+    answers: ['muestra conexiones activas y puertos', 'conexiones de red y puertos abiertos', 'muestra todas las conexiones y puertos en escucha', 'puertos abiertos y conexiones tcp udp', 'estado de conexiones de red'],
+    feedback: '✓ CORRECTO. netstat -an muestra todas las conexiones TCP/UDP con IPs numéricas: puertos en LISTENING, conexiones ESTABLISHED, etc.'
+  },
+  {
+    num: 6, pts: 1,
+    q: '¿Qué protocolo usa el comando PING para comunicarse?',
+    hint: 'No es TCP ni UDP. Es un protocolo de mensajes de control de red.',
+    hint2: 'Protocolo: <strong>ICMP</strong> (Internet Control Message Protocol) — RFC 792. Usa mensajes Echo Request y Echo Reply.',
+    answers: ['icmp', 'internet control message protocol', 'icmp echo'],
+    feedback: '✓ CORRECTO. PING usa el protocolo ICMP (Internet Control Message Protocol), enviando Echo Request y esperando Echo Reply.'
+  },
+  {
+    num: 7, pts: 1,
+    q: 'Escribe el comando para ver la tabla ARP completa en Windows o Linux.',
+    hint: 'La tabla ARP mapea direcciones IP a direcciones MAC en la red local. El comando es el mismo en ambos SO.',
+    hint2: 'Comando: <span class="cmd-ref">arp -a</span> — el flag -a muestra todas las entradas de la caché ARP.',
+    answers: ['arp -a', 'arp'],
+    feedback: '✓ CORRECTO. arp -a muestra la tabla ARP con todas las correspondencias IP ↔ MAC de la red local.'
+  },
+  {
+    num: 8, pts: 1,
+    q: '¿Qué hace "ipconfig /flushdns" y en qué situación lo usarías?',
+    hint: 'DNS tiene una caché local que guarda respuestas anteriores. A veces esa caché queda desactualizada.',
+    hint2: 'Usar cuando: un dominio cambió de IP y tu equipo sigue usando la IP vieja, o si hay problemas de resolución DNS.',
+    answers: ['limpia la cache dns', 'borra la cache dns', 'vacía la caché dns', 'elimina cache de dns', 'flush dns cache', 'limpiar cache dns'],
+    feedback: '✓ CORRECTO. /flushdns vacía la caché DNS local. Se usa cuando un dominio cambió de IP y el equipo aún recuerda la IP antigua.'
+  },
+  {
+    num: 9, pts: 1,
+    q: 'Escribe el comando nslookup para consultar los registros MX (servidores de correo) de gmail.com.',
+    hint: 'nslookup acepta un flag para especificar el tipo de registro DNS. Los registros MX indican servidores de email.',
+    hint2: 'Comando: <span class="cmd-ref">nslookup -type=mx gmail.com</span> — en Linux: dig gmail.com MX',
+    answers: ['nslookup -type=mx gmail.com', 'nslookup -type mx gmail.com', 'dig gmail.com mx', 'dig gmail.com MX', 'nslookup gmail.com -type=mx'],
+    feedback: '✓ CORRECTO. nslookup -type=mx gmail.com consulta los servidores de correo de Gmail. En Linux: dig gmail.com MX'
+  },
+  {
+    num: 10, pts: 1,
+    q: '¿Qué significa TTL en el contexto del comando PING y qué indica su valor?',
+    hint: 'TTL no es tiempo en milisegundos. Es un contador que se decrementa en cada router que atraviesa el paquete.',
+    hint2: '<strong>TTL = Time To Live</strong>: número máximo de saltos. Cada router resta 1. Si llega a 0, el paquete se descarta. Un TTL de 128 suele indicar Windows, 64 Linux.',
+    answers: ['time to live', 'tiempo de vida', 'ttl es time to live y indica el número de saltos', 'número de saltos máximos', 'time to live saltos'],
+    feedback: '✓ CORRECTO. TTL (Time To Live) es el número máximo de saltos que puede hacer un paquete. Cada router decrementa 1. Windows usa 128, Linux usa 64 por defecto.'
+  },
+  {
+    num: 11, pts: 1,
+    q: 'Escribe el comando nmap para detectar versiones de servicios en el host 192.168.1.1.',
+    hint: 'Nmap tiene un flag específico para detección de versiones de servicios (-sV de "service version").',
+    hint2: 'Comando: <span class="cmd-ref">nmap -sV 192.168.1.1</span> — combina escaneo de puertos con detección de versión.',
+    answers: ['nmap -sv 192.168.1.1', 'nmap -sV 192.168.1.1', 'nmap -sV -192.168.1.1'],
+    feedback: '✓ CORRECTO. nmap -sV detecta la versión del servicio corriendo en cada puerto abierto (ej: "OpenSSH 8.9", "Apache 2.4").'
+  },
+  {
+    num: 12, pts: 1,
+    q: '¿Qué es el ARP Spoofing y qué tipo de ataque posibilita?',
+    hint: 'El atacante envía respuestas ARP falsas para "envenenar" la tabla ARP de la víctima.',
+    hint2: 'ARP Spoofing → envía respuestas ARP con MAC falsa → la víctima asocia la IP del gateway con la MAC del atacante → el tráfico pasa por el atacante.',
+    answers: ['man in the middle', 'mitm', 'ataque de intermediario', 'envenenamiento arp para interceptar tráfico', 'arp poisoning man in the middle', 'interceptar tráfico de red'],
+    feedback: '✓ CORRECTO. ARP Spoofing permite un ataque Man-in-the-Middle (MITM): el atacante envenena la tabla ARP redirigiendo el tráfico a través de sí mismo.'
+  },
+  {
+    num: 13, pts: 1,
+    q: 'Escribe el comando para ver la tabla de rutas en Windows.',
+    hint: 'El comando se llama "route" y necesita un subcomando para imprimir/mostrar la tabla.',
+    hint2: 'Comando: <span class="cmd-ref">route PRINT</span> — muestra todas las rutas IPv4 e IPv6 activas.',
+    answers: ['route print', 'route -n', 'ip route', 'ip route show', 'route print -4'],
+    feedback: '✓ CORRECTO. route PRINT muestra la tabla de enrutamiento completa en Windows. En Linux: ip route show'
+  },
+  {
+    num: 14, pts: 1,
+    q: 'Explica para qué sirve "netsh wlan show profile [nombre] key=clear" en Windows.',
+    hint: 'Este comando de netsh trabaja con perfiles WiFi guardados en el sistema.',
+    hint2: 'Muestra el contenido del perfil WiFi, incluyendo la contraseña en texto plano con "key=clear".',
+    answers: ['muestra la contraseña del wifi', 'revela la clave wifi', 'muestra contraseña de red wifi guardada', 'ver contraseña wifi en texto plano', 'contraseña wifi guardada'],
+    feedback: '✓ CORRECTO. netsh wlan show profile [nombre] key=clear muestra la contraseña de la red WiFi guardada en Windows en texto plano.'
+  },
+  {
+    num: 15, pts: 1,
+    q: 'Escribe el comando nmap para escanear todos los hosts activos de la red 192.168.1.0/24.',
+    hint: 'Nmap acepta rangos de red en notación CIDR. /24 significa los últimos 8 bits son el host (256 IPs).',
+    hint2: 'Comando: <span class="cmd-ref">nmap 192.168.1.0/24</span> — escanea las 256 IPs de la red local.',
+    answers: ['nmap 192.168.1.0/24', 'nmap 192.168.1.1/24', 'nmap -sn 192.168.1.0/24'],
+    feedback: '✓ CORRECTO. nmap 192.168.1.0/24 escanea toda la subred /24 (256 hosts). Con -sn solo hace ping scan sin escanear puertos.'
+  }
+];
+
+let totalScore = 0;
+let answered = new Set();
+
+function renderTP() {
+  const grid = document.getElementById('tp-grid');
+  grid.innerHTML = '';
+
+  tpQuestions.forEach(q => {
+    const card = document.createElement('div');
+    card.className = 'tp-card';
+    card.id = `tp-card-${q.num}`;
+    card.innerHTML = `
+      <div class="tp-num">EJERCICIO ${q.num}</div>
+      <div class="tp-pts">${q.pts} PUNTO${q.pts > 1 ? 'S' : ''}</div>
+      <div class="tp-question">${q.q}</div>
+      <div class="tp-hint">
+        <strong>&gt; PISTA:</strong> ${q.hint}<br>
+        <details style="margin-top:0.5rem">
+          <summary style="cursor:pointer;color:var(--green3);font-size:0.75rem;">[+ VER AYUDA COMPLETA]</summary>
+          <div style="margin-top:0.5rem">${q.hint2}</div>
+        </details>
+      </div>
+      <textarea class="tp-answer" id="ans-${q.num}" placeholder="> Escribe tu respuesta aquí..." rows="2"></textarea>
+      <br>
+      <button class="tp-check" onclick="checkAnswer(${q.num})">[ VERIFICAR RESPUESTA ]</button>
+      <div class="tp-feedback" id="fb-${q.num}"></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function checkAnswer(num) {
+  if (answered.has(num)) return;
+
+  const q = tpQuestions.find(x => x.num === num);
+  const userAns = document.getElementById(`ans-${num}`).value.trim().toLowerCase();
+  const fb = document.getElementById(`fb-${num}`);
+  const card = document.getElementById(`tp-card-${num}`);
+
+  const isCorrect = q.answers.some(a => {
+    const normalized = a.toLowerCase();
+    return userAns === normalized || userAns.includes(normalized) || normalized.includes(userAns);
+  });
+
+  if (isCorrect) {
+    fb.className = 'tp-feedback correct';
+    fb.innerHTML = `[+] ${q.feedback}`;
+    card.style.borderColor = 'var(--green)';
+    answered.add(num);
+    totalScore += q.pts;
+    updateScore();
+  } else {
+    fb.className = 'tp-feedback wrong';
+    fb.innerHTML = `[-] Respuesta incorrecta. Revisa la pista y vuelve a intentarlo.`;
+  }
+}
+
+function updateScore() {
+  const maxPts = tpQuestions.reduce((a,b) => a + b.pts, 0);
+  document.getElementById('score-display').textContent = totalScore;
+  const pct = (totalScore / maxPts) * 100;
+  document.getElementById('score-fill').style.width = pct + '%';
+
+  let verdict = '';
+  if (pct >= 90) verdict = '[A+] ELITE HACKER — EXCELENTE';
+  else if (pct >= 70) verdict = '[A] MUY BUENO';
+  else if (pct >= 50) verdict = '[B] APROBADO';
+  else if (pct > 0) verdict = '[C] SIGUE PRACTICANDO';
+
+  document.getElementById('score-verdict').textContent = verdict;
+}
+
+renderTP();
+
+// ============================================================
+// SCROLL ANIMATIONS
+// ============================================================
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// NAV ACTIVE
+function setActive(el) {
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Focus terminal on click
+document.querySelector('.terminal-wrapper').addEventListener('click', () => input.focus());
+</script>
+</body>
+</html>
