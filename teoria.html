@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NET//THEORY — Teoría de Comandos de Red</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --green: #00ff41;
+  --green2: #00cc33;
+  --green3: #008f11;
+  --green4: #005a0a;
+  --dark: #0d0d0d;
+  --darker: #050505;
+  --card: #090f09;
+  --card2: #0d160d;
+  --border: rgba(0,255,65,0.2);
+  --red: #ff003c;
+  --cyan: #00e5ff;
+  --yellow: #ffd600;
+  --orange: #ff6d00;
+  --purple: #ce93d8;
+  --text: #b8d4b8;
+  --text2: #7a9e7a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--darker);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── SIDEBAR NAV ── */
+#sidebar {
+  position: fixed;
+  left: 0; top: 0;
+  width: 270px;
+  height: 100vh;
+  background: rgba(5,5,5,0.97);
+  border-right: 1px solid var(--green4);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 1.5rem 0 2rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--green4) transparent;
+}
+
+#sidebar::-webkit-scrollbar { width: 3px; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--green4); }
+
+.sidebar-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--green);
+  text-shadow: 0 0 15px var(--green3);
+  letter-spacing: 3px;
+  padding: 0 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--green4);
+  margin-bottom: 1rem;
+}
+
+.sidebar-logo span { color: var(--red); }
+.sidebar-logo small {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--text2);
+  letter-spacing: 2px;
+  margin-top: 0.3rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.nav-group { margin-bottom: 0.3rem; }
+
+.nav-group-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--green3);
+  letter-spacing: 3px;
+  padding: 0.7rem 1.5rem 0.3rem;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 1.5rem;
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-family: 'Share Tech Mono', monospace;
+  transition: all 0.2s;
+  border-left: 2px solid transparent;
+  letter-spacing: 0.5px;
+}
+
+.nav-item:hover, .nav-item.active {
+  color: var(--green);
+  background: rgba(0,255,65,0.04);
+  border-left-color: var(--green3);
+}
+
+.nav-item .nav-icon {
+  width: 16px;
+  height: 16px;
+  border: 1px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  flex-shrink: 0;
+}
+
+.nav-sub {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 1.5rem 0.3rem 3rem;
+  color: var(--green4);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-family: 'Share Tech Mono', monospace;
+  transition: all 0.2s;
+}
+
+.nav-sub:hover { color: var(--green2); }
+.nav-sub::before { content: '└'; color: var(--green4); }
+
+/* ── MAIN CONTENT ── */
+#main {
+  margin-left: 270px;
+  min-height: 100vh;
+}
+
+/* ── HERO ── */
+#hero {
+  background: linear-gradient(180deg, #000 0%, #050f05 100%);
+  border-bottom: 1px solid var(--green4);
+  padding: 5rem 4rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+#hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(0,255,65,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--green3);
+  letter-spacing: 4px;
+  margin-bottom: 1rem;
+}
+
+.hero-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  color: var(--green);
+  text-shadow: 0 0 30px rgba(0,255,65,0.3);
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.hero-title span { color: var(--red); }
+
+.hero-desc {
+  color: var(--text2);
+  font-size: 1rem;
+  max-width: 650px;
+  line-height: 1.7;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: center;
+  border: 1px solid var(--green4);
+  padding: 0.8rem 1.5rem;
+  background: rgba(0,255,65,0.02);
+}
+
+.stat-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--green);
+  display: block;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--text2);
+  letter-spacing: 2px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* ── CONTENT SECTIONS ── */
+.content-wrap {
+  max-width: 960px;
+  padding: 0 4rem 6rem;
+}
+
+/* ── CHAPTER ── */
+.chapter {
+  padding-top: 5rem;
+}
+
+.chapter-header {
+  border-bottom: 1px solid var(--green4);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.chapter-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--green3);
+  letter-spacing: 3px;
+  margin-bottom: 0.4rem;
+}
+
+.chapter-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--green);
+  text-shadow: 0 0 15px rgba(0,255,65,0.2);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ch-tag {
+  font-size: 0.6rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 2px;
+  vertical-align: middle;
+}
+
+.ch-win { border-color: var(--cyan); color: var(--cyan); }
+.ch-linux { border-color: var(--orange); color: var(--orange); }
+.ch-both { border-color: var(--yellow); color: var(--yellow); }
+
+.chapter-subtitle {
+  color: var(--text2);
+  font-size: 0.95rem;
+}
+
+/* ── CONTENT ELEMENTS ── */
+h3 {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.95rem;
+  color: var(--green2);
+  letter-spacing: 2px;
+  margin: 2rem 0 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+h3::before { content: '//'; color: var(--green4); font-family: 'Share Tech Mono', monospace; }
+
+h4 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--green3);
+  letter-spacing: 2px;
+  margin: 1.5rem 0 0.6rem;
+}
+
+p { margin-bottom: 1rem; color: var(--text); }
+
+strong { color: var(--green2); font-weight: 600; }
+em { color: var(--yellow); font-style: normal; }
+code {
+  font-family: 'Share Tech Mono', monospace;
+  background: rgba(0,255,65,0.06);
+  border: 1px solid var(--green4);
+  padding: 0.1rem 0.4rem;
+  font-size: 0.82rem;
+  color: var(--cyan);
+}
+
+/* ── CODE BLOCK ── */
+.code-block {
+  background: #000;
+  border: 1px solid var(--green4);
+  border-left: 3px solid var(--green3);
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  overflow-x: auto;
+  color: var(--green2);
+  line-height: 1.6;
+}
+
+.code-block .comment { color: var(--green4); }
+.code-block .highlight { color: var(--yellow); }
+.code-block .success { color: #00ff00; }
+.code-block .error { color: var(--red); }
+.code-block .info { color: var(--cyan); }
+
+/* ── INFO BOX ── */
+.info-box {
+  border: 1px solid;
+  padding: 1rem 1.2rem;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.info-box.tip { border-color: var(--green3); background: rgba(0,255,65,0.03); }
+.info-box.warn { border-color: var(--yellow); background: rgba(255,214,0,0.03); }
+.info-box.danger { border-color: var(--red); background: rgba(255,0,60,0.03); }
+.info-box.concept { border-color: var(--cyan); background: rgba(0,229,255,0.03); }
+.info-box.fact { border-color: var(--purple); background: rgba(206,147,216,0.03); }
+
+.info-box-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.info-box.tip .info-box-label { color: var(--green); }
+.info-box.warn .info-box-label { color: var(--yellow); }
+.info-box.danger .info-box-label { color: var(--red); }
+.info-box.concept .info-box-label { color: var(--cyan); }
+.info-box.fact .info-box-label { color: var(--purple); }
+
+.info-box p { margin: 0; font-size: 0.88rem; }
+
+/* ── TABLE ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.82rem;
+}
+
+th {
+  background: rgba(0,255,65,0.05);
+  border: 1px solid var(--green4);
+  padding: 0.6rem 0.8rem;
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--green2);
+  letter-spacing: 1px;
+  text-align: left;
+}
+
+td {
+  border: 1px solid rgba(0,255,65,0.1);
+  padding: 0.5rem 0.8rem;
+  color: var(--text);
+  vertical-align: top;
+}
+
+tr:hover td { background: rgba(0,255,65,0.02); }
+
+/* ── DIAGRAM ── */
+.diagram {
+  background: #000;
+  border: 1px solid var(--green4);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--green2);
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* ── FLAG LIST ── */
+.flag-list { margin: 0.8rem 0; }
+.flag-item {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0,255,65,0.06);
+  font-size: 0.85rem;
+}
+.flag-item:last-child { border-bottom: none; }
+.flag-code {
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--yellow);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+.flag-desc { color: var(--text); }
+
+/* ── CONCEPT PILL ── */
+.concept-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(0,229,255,0.07);
+  border: 1px solid rgba(0,229,255,0.3);
+  color: var(--cyan);
+  padding: 0.1rem 0.5rem;
+  font-size: 0.78rem;
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.concept-link:hover {
+  background: rgba(0,229,255,0.12);
+  text-shadow: 0 0 8px var(--cyan);
+}
+
+/* ── PROTOCOL STACK VISUAL ── */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 1.5rem 0;
+  max-width: 400px;
+}
+
+.stack-layer {
+  padding: 0.7rem 1rem;
+  border: 1px solid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+
+.stack-layer:hover { filter: brightness(1.3); }
+.stack-layer.l7 { border-color: #00ff41; background: rgba(0,255,65,0.05); color: #00ff41; }
+.stack-layer.l4 { border-color: #00e5ff; background: rgba(0,229,255,0.05); color: #00e5ff; }
+.stack-layer.l3 { border-color: #ffd600; background: rgba(255,214,0,0.05); color: #ffd600; }
+.stack-layer.l2 { border-color: #ff6d00; background: rgba(255,109,0,0.05); color: #ff6d00; }
+.stack-layer.l1 { border-color: #ce93d8; background: rgba(206,147,216,0.05); color: #ce93d8; }
+.layer-num { opacity: 0.5; font-size: 0.7rem; }
+.layer-proto { color: inherit; opacity: 0.7; font-size: 0.72rem; }
+
+/* ── TOC ── */
+.toc {
+  background: var(--card);
+  border: 1px solid var(--green4);
+  padding: 1.5rem;
+  margin: 2rem 0 3rem;
+}
+
+.toc-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem;
+  color: var(--green);
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.toc-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.3rem;
+  list-style: none;
+}
+
+.toc-list a {
+  color: var(--text2);
+  text-decoration: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0;
+  transition: color 0.2s;
+}
+
+.toc-list a:hover { color: var(--green); }
+.toc-list a::before { content: '›'; color: var(--green3); }
+
+/* ── SEPARATOR ── */
+.sep {
+  border: none;
+  border-top: 1px solid var(--green4);
+  margin: 3rem 0;
+  opacity: 0.4;
+}
+
+/* ── BACK BTN ── */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--green3);
+  text-decoration: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 2px;
+  border: 1px solid var(--green4);
+  padding: 0.4rem 1rem;
+  transition: all 0.2s;
+  margin-bottom: 2rem;
+}
+
+.back-btn:hover { color: var(--green); border-color: var(--green3); }
+
+/* ── MOBILE ── */
+@media (max-width: 900px) {
+  #sidebar { display: none; }
+  #main { margin-left: 0; }
+  .content-wrap { padding: 0 1.5rem 4rem; }
+  #hero { padding: 3rem 1.5rem 2.5rem; }
+}
+
+/* ── SCROLL INDICATOR ── */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 270px;
+  right: 0;
+  height: 2px;
+  background: var(--green4);
+  z-index: 200;
+}
+
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green3), var(--green));
+  width: 0%;
+  transition: width 0.1s;
+  box-shadow: 0 0 6px var(--green3);
+}
+
+/* ── SEARCH BOX ── */
+.search-wrap {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--green4);
+}
+
+#sidebar-search {
+  width: 100%;
+  background: #000;
+  border: 1px solid var(--green4);
+  color: var(--green);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  padding: 0.4rem 0.7rem;
+  outline: none;
+}
+
+#sidebar-search::placeholder { color: var(--green4); }
+#sidebar-search:focus { border-color: var(--green3); }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"><div id="progress-fill"></div></div>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    NET<span>/</span>/THEORY
+    <small>COMANDOS DE RED</small>
+  </div>
+
+  <div class="search-wrap">
+    <input type="text" id="sidebar-search" placeholder="> buscar concepto..." oninput="searchNav(this.value)">
+  </div>
+
+  <div id="nav-content">
+    <div class="nav-group">
+      <div class="nav-group-title">INTRODUCCIÓN</div>
+      <a href="#intro" class="nav-item"><span class="nav-icon">i</span>¿Qué son las redes?</a>
+      <a href="#modelos" class="nav-item"><span class="nav-icon">M</span>Modelos OSI / TCP-IP</a>
+      <a href="#protocolos" class="nav-item"><span class="nav-icon">P</span>Protocolos base</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">COMANDOS</div>
+      <a href="#ping" class="nav-item"><span class="nav-icon">1</span>PING</a>
+        <a href="#icmp" class="nav-sub">ICMP</a>
+        <a href="#ttl" class="nav-sub">TTL</a>
+        <a href="#rtt" class="nav-sub">RTT / Latencia</a>
+      <a href="#tracert" class="nav-item"><span class="nav-icon">2</span>TRACERT / TRACEROUTE</a>
+        <a href="#hops" class="nav-sub">Saltos / Hops</a>
+      <a href="#ipconfig" class="nav-item"><span class="nav-icon">3</span>IPCONFIG / IFCONFIG</a>
+        <a href="#ip" class="nav-sub">Qué es una IP</a>
+        <a href="#mascara" class="nav-sub">Máscara de subred</a>
+        <a href="#gateway" class="nav-sub">Gateway</a>
+        <a href="#dhcp" class="nav-sub">DHCP</a>
+        <a href="#mac" class="nav-sub">Dirección MAC</a>
+      <a href="#netstat" class="nav-item"><span class="nav-icon">4</span>NETSTAT</a>
+        <a href="#puertos" class="nav-sub">Puertos</a>
+        <a href="#tcp-estados" class="nav-sub">Estados TCP</a>
+        <a href="#tcp-udp" class="nav-sub">TCP vs UDP</a>
+      <a href="#nslookup" class="nav-item"><span class="nav-icon">5</span>NSLOOKUP / DIG</a>
+        <a href="#dns" class="nav-sub">Cómo funciona DNS</a>
+        <a href="#registros" class="nav-sub">Tipos de registros</a>
+      <a href="#arp-cap" class="nav-item"><span class="nav-icon">6</span>ARP</a>
+        <a href="#arp-proto" class="nav-sub">Protocolo ARP</a>
+        <a href="#arp-spoof" class="nav-sub">ARP Spoofing</a>
+      <a href="#route-cap" class="nav-item"><span class="nav-icon">7</span>ROUTE</a>
+        <a href="#enrutamiento" class="nav-sub">Enrutamiento</a>
+        <a href="#cidr" class="nav-sub">CIDR / Subnetting</a>
+      <a href="#nmap-cap" class="nav-item"><span class="nav-icon">8</span>NMAP</a>
+        <a href="#tcp-handshake" class="nav-sub">TCP Handshake</a>
+        <a href="#scan-types" class="nav-sub">Tipos de escaneo</a>
+      <a href="#pathping-cap" class="nav-item"><span class="nav-icon">9</span>PATHPING / MTR</a>
+      <a href="#netsh-cap" class="nav-item"><span class="nav-icon">10</span>NETSH / NMCLI</a>
+      <a href="#curl-cap" class="nav-item"><span class="nav-icon">11</span>CURL / WGET</a>
+        <a href="#http" class="nav-sub">HTTP / HTTPS</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">CONCEPTOS CLAVE</div>
+      <a href="#glosario" class="nav-item"><span class="nav-icon">G</span>Glosario completo</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main id="main">
+  <div id="hero">
+    <p class="hero-tag">&gt; DOCUMENTACIÓN TÉCNICA — COMANDOS DE RED</p>
+    <h1 class="hero-title">NET<span>/</span>/THEORY</h1>
+    <p class="hero-desc">
+      Guía completa de comandos de red con toda la teoría detrás: protocolos, sub-conceptos, diagramas y datos interesantes. Nada queda sin explicar.
+    </p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">12</span><span class="stat-label">COMANDOS</span></div>
+      <div class="stat"><span class="stat-num">30+</span><span class="stat-label">CONCEPTOS</span></div>
+      <div class="stat"><span class="stat-num">OSI</span><span class="stat-label">MODELO</span></div>
+      <div class="stat"><span class="stat-num">TCP/IP</span><span class="stat-label">STACK</span></div>
+    </div>
+  </div>
+
+  <div class="content-wrap">
+    <a href="index.html" class="back-btn" style="margin-top:2.5rem;display:inline-flex">← VOLVER AL SIMULADOR</a>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">// ÍNDICE DE CONTENIDOS</div>
+      <ul class="toc-list">
+        <li><a href="#intro">Introducción a redes</a></li>
+        <li><a href="#modelos">Modelos OSI / TCP-IP</a></li>
+        <li><a href="#ping">PING</a></li>
+        <li><a href="#icmp">Protocolo ICMP</a></li>
+        <li><a href="#ttl">TTL explicado</a></li>
+        <li><a href="#tracert">TRACERT</a></li>
+        <li><a href="#ipconfig">IPCONFIG / IFCONFIG</a></li>
+        <li><a href="#ip">Direcciones IP</a></li>
+        <li><a href="#dhcp">Protocolo DHCP</a></li>
+        <li><a href="#netstat">NETSTAT</a></li>
+        <li><a href="#tcp-udp">TCP vs UDP</a></li>
+        <li><a href="#puertos">Puertos de red</a></li>
+        <li><a href="#nslookup">NSLOOKUP / DIG</a></li>
+        <li><a href="#dns">Cómo funciona DNS</a></li>
+        <li><a href="#arp-cap">ARP</a></li>
+        <li><a href="#route-cap">ROUTE</a></li>
+        <li><a href="#nmap-cap">NMAP</a></li>
+        <li><a href="#tcp-handshake">TCP Handshake</a></li>
+        <li><a href="#curl-cap">CURL / WGET</a></li>
+        <li><a href="#glosario">Glosario</a></li>
+      </ul>
+    </div>
+
+    <!-- ══════════ INTRO ══════════ -->
+    <section class="chapter" id="intro">
+      <div class="chapter-header">
+        <div class="chapter-num">CAPÍTULO 00</div>
+        <h2 class="chapter-title">¿Qué es una red informática?</h2>
+        <p class="chapter-subtitle">Antes de hablar de comandos, hay que entender sobre qué trabajan.</p>
+      </div>
+
+      <p>Una <strong>red informática</strong> es un conjunto de dispositivos (computadoras, routers, teléfonos, servidores) interconectados que pueden <strong>intercambiar datos</strong> entre sí. Esos datos viajan en forma de pequeños bloques llamados <strong>paquetes</strong>.</p>
+
+      <p>Pensá en la red como una ciudad: cada dispositivo es una casa con su propia dirección (IP), las calles son los cables o el WiFi, y los routers son las intersecciones que deciden por dónde manda el tráfico.</p>
+
+      <div class="info-box fact">
+        <div class="info-box-label">DATO INTERESANTE</div>
+        <p>Internet no es "la nube" ni un lugar abstracto. Es una red de redes físicas conectadas entre sí: millones de kilómetros de cables de fibra óptica bajo tierra y bajo el océano, más satélites. Los <strong>cables submarinos</strong> transportan el 95% del tráfico internacional de internet.</p>
+      </div>
+
+      <h3>¿Cómo viajan los datos?</h3>
+      <p>Los datos se dividen en <strong>paquetes</strong> antes de enviarse. Cada paquete tiene una <em>cabecera (header)</em> con información de origen, destino y número de secuencia, y un <em>cuerpo (payload)</em> con los datos reales. Los paquetes pueden tomar distintas rutas y se reensamblan al llegar.</p>
+
+      <div class="diagram">  Tu PC                    Router 1              Router 2            Servidor
+  [192.168.1.100]  ──────►  [10.0.0.1]   ──────►  [200.51.12.1]  ──────►  [142.250.x.x]
+
+  Paquete #1 ──────────────────────────────────────────────────────────────────────────►
+  Paquete #2 ─────────────────────────────────────────────────────────────────────►
+  Paquete #3 (ruta alternativa) ──────────────────────────────────────────────────────►
+
+  Al llegar: se reensamblan en orden usando los números de secuencia</div>
+    </section>
+
+    <!-- ══════════ MODELOS OSI ══════════ -->
+    <section class="chapter" id="modelos">
+      <div class="chapter-header">
+        <div class="chapter-num">CAPÍTULO 01</div>
+        <h2 class="chapter-title">Modelos OSI y TCP/IP</h2>
+        <p class="chapter-subtitle">El mapa conceptual de toda comunicación en red.</p>
+      </div>
+
+      <p>Para entender cómo se comunican los dispositivos, existen dos modelos de referencia que dividen el proceso en capas. Cada capa tiene una responsabilidad específica y usa los servicios de la capa inferior.</p>
+
+      <h3>Modelo OSI — 7 capas</h3>
+      <p>El modelo <strong>OSI</strong> (Open Systems Interconnection) divide la comunicación en 7 capas. Es un modelo teórico que sirve para entender y diagnosticar problemas.</p>
+
+      <div class="stack">
+        <div class="stack-layer l7"><span>7 — APLICACIÓN</span><span class="layer-proto">HTTP, FTP, DNS, SMTP</span></div>
+        <div class="stack-layer l7" style="filter:brightness(0.85)"><span>6 — PRESENTACIÓN</span><span class="layer-proto">SSL/TLS, compresión</span></div>
+        <div class="stack-layer l7" style="filter:brightness(0.7)"><span>5 — SESIÓN</span><span class="layer-proto">NetBIOS, RPC</span></div>
+        <div class="stack-layer l4"><span>4 — TRANSPORTE</span><span class="layer-proto">TCP, UDP</span></div>
+        <div class="stack-layer l3"><span>3 — RED</span><span class="layer-proto">IP, ICMP, ARP</span></div>
+        <div class="stack-layer l2"><span>2 — ENLACE DE DATOS</span><span class="layer-proto">Ethernet, WiFi, MAC</span></div>
+        <div class="stack-layer l1"><span>1 — FÍSICA</span><span class="layer-proto">Cable, fibra, radio</span></div>
+      </div>
+
+      <div class="info-box tip">
+        <div class="info-box-label">MNEMOTECNIA</div>
+        <p>Para recordar las 7 capas de abajo hacia arriba: <strong>"Por Favor Dame Tres Sillas Perfectas Ahora"</strong> → Física, Enlace, Red, Transporte, Sesión, Presentación, Aplicación.</p>
+      </div>
+
+      <h3>Modelo TCP/IP — 4 capas (el real)</h3>
+      <p>El modelo TCP/IP es el que realmente usa Internet. Simplifica las 7 capas de OSI en 4:</p>
+
+      <table>
+        <tr><th>Capa TCP/IP</th><th>Equivale a OSI</th><th>Protocolos</th></tr>
+        <tr><td>Aplicación</td><td>5, 6, 7</td><td>HTTP, DNS, FTP, SMTP, SSH</td></tr>
+        <tr><td>Transporte</td><td>4</td><td>TCP, UDP</td></tr>
+        <tr><td>Internet</td><td>3</td><td>IP, ICMP, ARP</td></tr>
+        <tr><td>Acceso a red</td><td>1, 2</td><td>Ethernet, WiFi, PPP</td></tr>
+      </table>
+
+      <p>Cuando ejecutás <code>ping</code>, trabajás en la capa de <strong>Internet (capa 3)</strong> usando el protocolo <strong>ICMP</strong>. Cuando navegás a un sitio web, usás HTTP/HTTPS en la capa de <strong>Aplicación</strong> sobre TCP en la capa de <strong>Transporte</strong>.</p>
+    </section>
+
+    <!-- ══════════ PROTOCOLOS ══════════ -->
+    <section class="chapter" id="protocolos">
+      <div class="chapter-header">
+        <div class="chapter-num">CAPÍTULO 02</div>
+        <h2 class="chapter-title">Protocolos de red base</h2>
+        <p class="chapter-subtitle">Las reglas del lenguaje que usan los dispositivos para hablar entre sí.</p>
+      </div>
+
+      <p>Un <strong>protocolo</strong> es un conjunto de reglas que define cómo se formatean y transmiten los datos. Sin protocolos estandarizados, una PC Windows no podría hablar con un servidor Linux.</p>
+
+      <table>
+        <tr><th>Protocolo</th><th>Capa</th><th>Para qué sirve</th></tr>
+        <tr><td><strong>IP</strong></td><td>Red (3)</td><td>Direccionamiento y enrutamiento de paquetes</td></tr>
+        <tr><td><strong>ICMP</strong></td><td>Red (3)</td><td>Mensajes de control y diagnóstico (usado por ping)</td></tr>
+        <tr><td><strong>TCP</strong></td><td>Transporte (4)</td><td>Comunicación confiable con confirmación de entrega</td></tr>
+        <tr><td><strong>UDP</strong></td><td>Transporte (4)</td><td>Comunicación rápida sin confirmación</td></tr>
+        <tr><td><strong>DNS</strong></td><td>Aplicación (7)</td><td>Traducir nombres de dominio a IPs</td></tr>
+        <tr><td><strong>ARP</strong></td><td>Red/Enlace (2-3)</td><td>Traducir IPs a direcciones MAC</td></tr>
+        <tr><td><strong>DHCP</strong></td><td>Aplicación (7)</td><td>Asignar IPs automáticamente</td></tr>
+        <tr><td><strong>HTTP/S</strong></td><td>Aplicación (7)</td><td>Transferencia de páginas web</td></tr>
+      </table>
+    </section>
+
+    <hr class="sep">
+
+    <!-- ══════════ PING ══════════ -->
+    <section class="chapter" id="ping">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 01</div>
+        <h2 class="chapter-title">PING <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">El comando más fundamental del diagnóstico de red.</p>
+      </div>
+
+      <p><strong>PING</strong> (Packet Internet Groper) es el primer comando que usa cualquier administrador de red cuando hay un problema. Responde la pregunta más básica: <em>"¿Este dispositivo está vivo y puede comunicarse conmigo?"</em></p>
+
+      <h3>Cómo funciona</h3>
+      <p>Ping envía pequeños paquetes al destino y espera que los devuelva. Midiendo cuánto tarda ese proceso, podemos saber:</p>
+
+      <div class="code-block"><span class="info">C:\> ping 8.8.8.8</span>
+
+Haciendo ping a 8.8.8.8 con 32 bytes de datos:
+<span class="success">Respuesta desde 8.8.8.8: bytes=32 tiempo=18ms TTL=118</span>    <span class="comment">← respuesta recibida en 18ms</span>
+<span class="success">Respuesta desde 8.8.8.8: bytes=32 tiempo=20ms TTL=118</span>
+<span class="success">Respuesta desde 8.8.8.8: bytes=32 tiempo=17ms TTL=118</span>
+<span class="error">Tiempo de espera agotado para esta solicitud.</span>       <span class="comment">← 1 paquete se perdió</span>
+
+Estadísticas de ping para 8.8.8.8:
+    Paquetes: enviados = 4, recibidos = 3, perdidos = 1 <span class="highlight">(25% perdidos)</span>
+Tiempos aproximados de ida y vuelta en milisegundos:
+    Mínimo = 17ms, Máximo = 20ms, Media = 18ms</div>
+
+      <h3>Flags más importantes</h3>
+      <div class="flag-list">
+        <div class="flag-item"><span class="flag-code">-n [num] (Win)<br>-c [num] (Linux)</span><span class="flag-desc">Número de paquetes a enviar. Por defecto Windows envía 4, Linux envía infinitos hasta Ctrl+C.</span></div>
+        <div class="flag-item"><span class="flag-code">-t (Win)<br>(sin flag en Linux)</span><span class="flag-desc">Ping continuo hasta que el usuario lo detenga con Ctrl+C. Útil para monitorear en tiempo real.</span></div>
+        <div class="flag-item"><span class="flag-code">-l [bytes] (Win)<br>-s [bytes] (Linux)</span><span class="flag-desc">Tamaño del paquete. Por defecto 32 bytes en Windows, 56 en Linux. Máximo ~65500 bytes.</span></div>
+        <div class="flag-item"><span class="flag-code">-i [ttl] (Win)<br>-t [ttl] (Linux)</span><span class="flag-desc">Establecer manualmente el TTL del paquete saliente.</span></div>
+        <div class="flag-item"><span class="flag-code">-4 / -6</span><span class="flag-desc">Forzar uso de IPv4 o IPv6.</span></div>
+      </div>
+
+      <div class="info-box warn">
+        <div class="info-box-label">IMPORTANTE</div>
+        <p>Que un host <strong>no responda al ping</strong> no significa que esté apagado. Muchos firewalls y servidores bloquean ICMP por seguridad. Por ejemplo, <code>ping microsoft.com</code> suele fallar aunque el sitio esté en línea.</p>
+      </div>
+
+      <!-- ── ICMP ── -->
+      <section id="icmp">
+        <h3>Sub-concepto: Protocolo ICMP</h3>
+        <p><strong>ICMP</strong> (Internet Control Message Protocol, RFC 792) es el protocolo de mensajería de la red. No transporta datos de usuario sino <em>mensajes de control y error</em> entre dispositivos de red.</p>
+
+        <p>Opera en la <strong>Capa 3 (Red)</strong> del modelo OSI, junto con IP. Los paquetes ICMP van encapsulados dentro de paquetes IP pero no usan puertos TCP/UDP.</p>
+
+        <table>
+          <tr><th>Tipo ICMP</th><th>Nombre</th><th>Descripción</th></tr>
+          <tr><td>0</td><td>Echo Reply</td><td>Respuesta al ping</td></tr>
+          <tr><td>3</td><td>Destination Unreachable</td><td>El destino no es alcanzable</td></tr>
+          <tr><td>5</td><td>Redirect</td><td>Usar otra ruta</td></tr>
+          <tr><td>8</td><td>Echo Request</td><td>El ping en sí</td></tr>
+          <tr><td>11</td><td>Time Exceeded</td><td>TTL llegó a 0 (usado por tracert)</td></tr>
+        </table>
+
+        <div class="info-box fact">
+          <div class="info-box-label">DATO CURIOSO</div>
+          <p>El nombre <strong>PING</strong> fue inspirado en el sonar de los submarinos: emiten un pulso sónico ("ping") y escuchan el eco para detectar objetos. El creador del comando, Mike Muuss, lo nombró así en 1983 cuando tenía solo 15 años. Murió en un accidente de tráfico en el año 2000.</p>
+        </div>
+      </section>
+
+      <!-- ── TTL ── -->
+      <section id="ttl">
+        <h3>Sub-concepto: TTL (Time To Live)</h3>
+        <p><strong>TTL</strong> es un campo en la cabecera IP que limita la vida de un paquete. Es un contador que <em>cada router decrementa en 1</em> al reenviar el paquete. Cuando llega a 0, el router descarta el paquete y envía un mensaje ICMP "Time Exceeded" al origen.</p>
+
+        <p>Su propósito es evitar que los paquetes circulen infinitamente por la red si hay un loop de rutas.</p>
+
+        <div class="diagram">  Tu PC (TTL=128)
+     │
+     ▼  Router 1 → TTL ahora = 127
+     │
+     ▼  Router 2 → TTL ahora = 126
+     │
+     ▼  Router 3 → TTL ahora = 125
+     │
+     ▼  ... y así hasta llegar al destino o hasta TTL=0
+
+  Si TTL llega a 0: el router descarta el paquete y te avisa con ICMP Type 11</div>
+
+        <table>
+          <tr><th>Sistema Operativo</th><th>TTL por defecto</th></tr>
+          <tr><td>Windows</td><td>128</td></tr>
+          <tr><td>Linux / Android</td><td>64</td></tr>
+          <tr><td>macOS / iOS</td><td>64</td></tr>
+          <tr><td>Cisco (routers)</td><td>255</td></tr>
+        </table>
+
+        <div class="info-box concept">
+          <div class="info-box-label">DATO ÚTIL</div>
+          <p>Cuando hacés ping a una IP y la respuesta tiene TTL=118, podés deducir que el servidor usa Windows (porque 128 - 118 = 10 saltos hasta llegar a vos). Si el TTL es 54, es probablemente Linux (64 - 54 = 10 saltos).</p>
+        </div>
+      </section>
+
+      <!-- ── RTT ── -->
+      <section id="rtt">
+        <h3>Sub-concepto: RTT y Latencia</h3>
+        <p><strong>RTT</strong> (Round Trip Time) es el tiempo que tarda un paquete en ir al destino <em>y volver</em>. Es lo que ping muestra en milisegundos (ms). También se llama <strong>latencia</strong>.</p>
+
+        <table>
+          <tr><th>Latencia</th><th>Contexto típico</th><th>Calidad</th></tr>
+          <tr><td>&lt; 5 ms</td><td>Red local (LAN)</td><td style="color:var(--green)">Excelente</td></tr>
+          <tr><td>5 - 30 ms</td><td>Ciudad o país cercano</td><td style="color:var(--green2)">Muy buena</td></tr>
+          <tr><td>30 - 100 ms</td><td>País distante</td><td style="color:var(--yellow)">Aceptable</td></tr>
+          <tr><td>100 - 200 ms</td><td>Otro continente</td><td style="color:var(--orange)">Perceptible</td></tr>
+          <tr><td>&gt; 200 ms</td><td>Muy lejos o red saturada</td><td style="color:var(--red)">Mala</td></tr>
+        </table>
+
+        <p><strong>Jitter</strong> es la variación en la latencia: si un ping da 18ms, 19ms, 80ms, 17ms, ese 80ms es jitter. Es especialmente malo para videollamadas y juegos online.</p>
+      </section>
+    </section>
+
+    <!-- ══════════ TRACERT ══════════ -->
+    <section class="chapter" id="tracert">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 02</div>
+        <h2 class="chapter-title">TRACERT / TRACEROUTE <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">Descubrí el camino exacto que toman tus datos.</p>
+      </div>
+
+      <p><strong>TRACERT</strong> en Windows y <strong>TRACEROUTE</strong> en Linux trazan la ruta completa que sigue un paquete desde tu computadora hasta el destino, mostrando cada router intermedio con su latencia.</p>
+
+      <h3>El truco del TTL incremental</h3>
+      <p>La técnica es ingeniosa: se envían paquetes con TTL=1, 2, 3, 4... sucesivamente. El primer router recibe el paquete con TTL=1, lo decrementa a 0, lo descarta y te envía un ICMP "Time Exceeded" — revelando así su IP. El segundo router hace lo mismo con TTL=2. Así se van descubriendo todos los routers del camino.</p>
+
+      <div class="diagram">  ENVÍO TTL=1:  Tu PC ──►  Router1 (TTL→0) ──✗── "Time Exceeded" ──► Tu PC descubre Router1
+  ENVÍO TTL=2:  Tu PC ──►  Router1 ──►  Router2 (TTL→0) ──✗── "Time Exceeded" ──► Router2
+  ENVÍO TTL=3:  Tu PC ──►  Router1 ──►  Router2 ──►  Router3 (TTL→0) ──✗── Router3
+  ...y así hasta llegar al destino final</div>
+
+      <div class="code-block"><span class="info">C:\> tracert google.com</span>
+
+Traza la ruta a google.com [142.250.184.78] mediante 30 saltos como máximo:
+
+  1    2 ms    2 ms    2 ms  <span class="success">192.168.1.1</span>          <span class="comment">← tu router hogareño</span>
+  2    8 ms    9 ms    8 ms  <span class="success">10.10.0.1</span>            <span class="comment">← router de tu ISP</span>
+  3   15 ms   14 ms   16 ms  <span class="success">200.51.12.1</span>          <span class="comment">← backbone del ISP</span>
+  4   22 ms   21 ms   23 ms  <span class="success">72.14.215.1</span>          <span class="comment">← red de Google (Peering)</span>
+  5    *        *        *   <span class="highlight">Tiempo de espera de la solicitud agotado.</span>  <span class="comment">← firewall</span>
+  6   25 ms   24 ms   25 ms  <span class="success">142.250.184.78</span>       <span class="comment">← servidor destino</span>
+
+Traza completa.</div>
+
+      <section id="hops">
+        <h3>Sub-concepto: Saltos (Hops) y Routers</h3>
+        <p>Cada "salto" o <strong>hop</strong> es un router que reenvía el paquete hacia el destino. Los routers son dispositivos especializados que leen la dirección IP destino de cada paquete y deciden por qué interfaz reenviarlo, usando su <strong>tabla de enrutamiento</strong>.</p>
+
+        <p>Los <strong>asteriscos (*)</strong> en tracert no significan que el router esté caído: simplemente tiene configurado un firewall que bloquea los paquetes ICMP con TTL expirado. El tráfico real sí pasa por él.</p>
+
+        <div class="info-box fact">
+          <div class="info-box-label">DATO INTERESANTE</div>
+          <p>La diferencia técnica entre Windows y Linux: <strong>tracert (Windows)</strong> usa paquetes ICMP Echo Request. <strong>traceroute (Linux)</strong> usa paquetes UDP por defecto (a puertos altos 33434+). Por eso en Linux se puede usar <code>traceroute -I</code> para que use ICMP como Windows. Esto importa porque algunos firewalls tratan diferente a ICMP y UDP.</p>
+        </div>
+      </section>
+    </section>
+
+    <!-- ══════════ IPCONFIG ══════════ -->
+    <section class="chapter" id="ipconfig">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 03</div>
+        <h2 class="chapter-title">IPCONFIG / IFCONFIG / IP ADDR <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">Tu DNI en la red: todo sobre la identidad de tu dispositivo.</p>
+      </div>
+
+      <p>Estos comandos muestran (y permiten modificar) la configuración de red de todas las interfaces del sistema. Son el punto de partida para cualquier diagnóstico.</p>
+
+      <div class="code-block"><span class="info">C:\> ipconfig /all</span>
+
+Adaptador Ethernet Ethernet:
+   Descripción: Realtek PCIe GbE Family Controller
+   <span class="highlight">Dirección física: A4-B1-C7-3F-22-09</span>          <span class="comment">← MAC Address</span>
+   <span class="highlight">DHCP habilitado: Sí</span>                          <span class="comment">← IP asignada automáticamente</span>
+   <span class="success">Dirección IPv4: 192.168.1.100</span>               <span class="comment">← tu IP en la red local</span>
+   <span class="success">Máscara de subred: 255.255.255.0</span>            <span class="comment">← define el tamaño de la red</span>
+   <span class="success">Puerta de enlace predeterminada: 192.168.1.1</span> <span class="comment">← el router</span>
+   <span class="success">Servidores DNS: 8.8.8.8, 8.8.4.4</span>           <span class="comment">← traductores de nombres</span></div>
+
+      <!-- ── IP ── -->
+      <section id="ip">
+        <h3>Sub-concepto: Dirección IP</h3>
+        <p>Una <strong>dirección IP</strong> (Internet Protocol) es el identificador único de un dispositivo en una red. Funciona como la dirección postal: sin ella, nadie sabe cómo enviarte datos.</p>
+
+        <h4>IPv4</h4>
+        <p>IPv4 usa 32 bits divididos en 4 grupos de 8 bits (octetos), escritos en decimal separados por puntos: <code>192.168.1.100</code>. Permite ~4.300 millones de direcciones únicas.</p>
+
+        <div class="info-box warn">
+          <div class="info-box-label">PROBLEMA ACTUAL</div>
+          <p>Las direcciones IPv4 ya se <strong>agotaron</strong> en 2011. Por eso hoy se usa <strong>NAT</strong> (Network Address Translation): múltiples dispositivos comparten una sola IP pública usando IPs privadas internamente.</p>
+        </div>
+
+        <h4>Rangos de IP privadas (RFC 1918)</h4>
+        <table>
+          <tr><th>Rango</th><th>Uso típico</th><th>Cantidad de IPs</th></tr>
+          <tr><td>10.0.0.0 – 10.255.255.255</td><td>Empresas grandes</td><td>16 millones</td></tr>
+          <tr><td>172.16.0.0 – 172.31.255.255</td><td>Empresas medianas</td><td>1 millón</td></tr>
+          <tr><td>192.168.0.0 – 192.168.255.255</td><td>Hogares y oficinas</td><td>65.536</td></tr>
+          <tr><td>127.0.0.0 – 127.255.255.255</td><td>Loopback (el mismo equipo)</td><td>16 millones</td></tr>
+        </table>
+
+        <h4>IPv6</h4>
+        <p>IPv6 usa 128 bits escritos en hexadecimal: <code>2001:0db8:85a3:0000:0000:8a2e:0370:7334</code>. Permite 340 undecillones de direcciones (340 seguido de 36 ceros). Fue diseñado para reemplazar IPv4, pero la transición es lenta.</p>
+      </section>
+
+      <!-- ── MÁSCARA ── -->
+      <section id="mascara">
+        <h3>Sub-concepto: Máscara de subred</h3>
+        <p>La <strong>máscara de subred</strong> define qué parte de una dirección IP identifica la <em>red</em> y qué parte identifica al <em>host</em> dentro de esa red.</p>
+
+        <div class="diagram">  IP:      192.168.1 . 100
+  Máscara: 255.255.255 . 0
+
+           [──────────────]   [───]
+                RED             HOST
+
+  Todos los dispositivos con 192.168.1.X están en la misma red.
+  El .100 identifica a este dispositivo específico.
+
+  En notación CIDR: 192.168.1.0/24  (24 bits para la red, 8 para host → 254 hosts)</div>
+
+        <p>La notación <strong>CIDR</strong> (ej: <code>/24</code>) indica cuántos bits son para la red. Una red <code>/24</code> tiene 256 IPs (254 usables), una <code>/16</code> tiene 65.536.</p>
+      </section>
+
+      <!-- ── GATEWAY ── -->
+      <section id="gateway">
+        <h3>Sub-concepto: Gateway (Puerta de enlace)</h3>
+        <p>El <strong>gateway predeterminado</strong> es la IP del router de tu red local. Cuando querés comunicarte con una IP que no está en tu red local (como 142.250.x.x de Google), tu PC envía el paquete al gateway, que sabe cómo enviarlo hacia internet.</p>
+
+        <div class="diagram">  ¿Destino 192.168.1.50? → Está en mi red → Envío directo (ARP)
+  ¿Destino 8.8.8.8?     → NO está en mi red → Lo envío a mi GATEWAY (192.168.1.1)</div>
+      </section>
+
+      <!-- ── DHCP ── -->
+      <section id="dhcp">
+        <h3>Sub-concepto: DHCP</h3>
+        <p><strong>DHCP</strong> (Dynamic Host Configuration Protocol) es el protocolo que asigna automáticamente una IP a tu dispositivo cuando se conecta a la red. Sin DHCP, tendrías que configurar manualmente IP, máscara, gateway y DNS en cada dispositivo.</p>
+
+        <p>El proceso DHCP tiene 4 pasos (DORA):</p>
+
+        <div class="diagram">  1. DISCOVER → Tu PC grita: "¿Hay algún servidor DHCP?"
+  2. OFFER    → El router responde: "Te ofrezco la IP 192.168.1.100"
+  3. REQUEST  → Tu PC dice: "Acepto esa IP"
+  4. ACK      → El router confirma: "Es tuya por 24 horas (lease time)"</div>
+
+        <div class="info-box tip">
+          <div class="info-box-label">PARA SABER</div>
+          <p><code>ipconfig /release</code> le dice al DHCP "ya no uso más esta IP". <code>ipconfig /renew</code> inicia el proceso DORA de nuevo para obtener una IP (la misma u otra). Útil cuando la red no funciona bien.</p>
+        </div>
+      </section>
+
+      <!-- ── MAC ── -->
+      <section id="mac">
+        <h3>Sub-concepto: Dirección MAC</h3>
+        <p>La <strong>dirección MAC</strong> (Media Access Control) es el identificador físico y único de cada interfaz de red, grabado por el fabricante. Se usa para la comunicación dentro de la misma red local (Capa 2), antes de llegar a la capa IP.</p>
+
+        <p>Tiene 48 bits escritos en hexadecimal: <code>A4:B1:C7:3F:22:09</code>. Los primeros 3 bytes (A4:B1:C7) identifican al <strong>fabricante</strong> (OUI — Organizationally Unique Identifier).</p>
+
+        <div class="info-box fact">
+          <div class="info-box-label">DATO CURIOSO</div>
+          <p>Las MACs son teóricamente únicas a nivel mundial, pero pueden <strong>spoofarse</strong> (falsificarse) por software. Muchos sistemas operativos modernos usan <strong>MAC aleatoria</strong> al conectarse a redes WiFi para proteger la privacidad del usuario.</p>
+        </div>
+      </section>
+    </section>
+
+    <!-- ══════════ NETSTAT ══════════ -->
+    <section class="chapter" id="netstat">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 04</div>
+        <h2 class="chapter-title">NETSTAT <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">El detector de conexiones sospechosas.</p>
+      </div>
+
+      <p><strong>NETSTAT</strong> (Network Statistics) muestra en tiempo real todas las conexiones de red activas, los puertos que están escuchando y las estadísticas del stack de red. Es una herramienta esencial para detectar malware o conexiones no autorizadas.</p>
+
+      <div class="code-block"><span class="info">C:\> netstat -ano</span>
+
+Proto  Dirección local          Dirección remota        Estado        PID
+<span class="success">TCP    192.168.1.100:49823     142.250.184.78:443     ESTABLISHED   4892</span>   <span class="comment">← Chrome en Google</span>
+<span class="success">TCP    192.168.1.100:49891     140.82.114.4:443       ESTABLISHED   7234</span>   <span class="comment">← GitHub</span>
+<span class="highlight">TCP    0.0.0.0:22              0.0.0.0:0              LISTENING     1240</span>   <span class="comment">← SSH escuchando</span>
+<span class="highlight">TCP    0.0.0.0:80              0.0.0.0:0              LISTENING     980</span>    <span class="comment">← servidor web</span>
+<span class="error">TCP    192.168.1.100:52341     203.0.113.42:4444      ESTABLISHED   3891</span>   <span class="comment">← ¡sospechoso!</span></div>
+
+      <!-- ── PUERTOS ── -->
+      <section id="puertos">
+        <h3>Sub-concepto: Puertos de red</h3>
+        <p>Los <strong>puertos</strong> son números del 0 al 65535 que permiten que un mismo dispositivo (con una sola IP) maneje múltiples servicios simultáneamente. Son como los "departamentos" dentro de un edificio (la IP es el edificio, el puerto es el departamento).</p>
+
+        <table>
+          <tr><th>Rango</th><th>Nombre</th><th>Descripción</th></tr>
+          <tr><td>0 – 1023</td><td>Well-Known Ports</td><td>Puertos del sistema, servicios estándar</td></tr>
+          <tr><td>1024 – 49151</td><td>Registered Ports</td><td>Aplicaciones de terceros registradas</td></tr>
+          <tr><td>49152 – 65535</td><td>Dynamic/Ephemeral</td><td>Puertos temporales asignados por el SO</td></tr>
+        </table>
+
+        <h4>Puertos más importantes</h4>
+        <table>
+          <tr><th>Puerto</th><th>Protocolo</th><th>Servicio</th></tr>
+          <tr><td>20, 21</td><td>TCP</td><td>FTP (transferencia de archivos)</td></tr>
+          <tr><td>22</td><td>TCP</td><td>SSH (acceso remoto seguro)</td></tr>
+          <tr><td>23</td><td>TCP</td><td>Telnet (acceso remoto, inseguro)</td></tr>
+          <tr><td>25</td><td>TCP</td><td>SMTP (envío de correo)</td></tr>
+          <tr><td>53</td><td>TCP/UDP</td><td>DNS</td></tr>
+          <tr><td>67, 68</td><td>UDP</td><td>DHCP</td></tr>
+          <tr><td>80</td><td>TCP</td><td>HTTP</td></tr>
+          <tr><td>110</td><td>TCP</td><td>POP3 (recepción de correo)</td></tr>
+          <tr><td>143</td><td>TCP</td><td>IMAP (correo)</td></tr>
+          <tr><td>443</td><td>TCP</td><td>HTTPS (HTTP seguro)</td></tr>
+          <tr><td>445</td><td>TCP</td><td>SMB (recursos compartidos Windows)</td></tr>
+          <tr><td>3306</td><td>TCP</td><td>MySQL</td></tr>
+          <tr><td>3389</td><td>TCP</td><td>RDP (Escritorio Remoto Windows)</td></tr>
+          <tr><td>8080</td><td>TCP</td><td>HTTP alternativo / proxies</td></tr>
+        </table>
+      </section>
+
+      <!-- ── TCP ESTADOS ── -->
+      <section id="tcp-estados">
+        <h3>Sub-concepto: Estados TCP</h3>
+        <p>TCP es un protocolo <em>orientado a conexión</em>: antes de enviar datos, establece un canal. Ese canal pasa por varios estados:</p>
+
+        <table>
+          <tr><th>Estado</th><th>Significado</th></tr>
+          <tr><td><strong>LISTENING</strong></td><td>Puerto abierto, esperando conexiones entrantes</td></tr>
+          <tr><td><strong>SYN_SENT</strong></td><td>Se envió solicitud de conexión, esperando respuesta</td></tr>
+          <tr><td><strong>SYN_RECEIVED</strong></td><td>Se recibió solicitud, enviando confirmación</td></tr>
+          <tr><td style="color:var(--green)"><strong>ESTABLISHED</strong></td><td>Conexión activa, datos fluyendo</td></tr>
+          <tr><td><strong>FIN_WAIT_1/2</strong></td><td>Proceso de cierre de conexión</td></tr>
+          <tr><td><strong>TIME_WAIT</strong></td><td>Esperando para asegurarse que se recibió el cierre</td></tr>
+          <tr><td><strong>CLOSE_WAIT</strong></td><td>El otro lado cerró la conexión, esperando cierre local</td></tr>
+          <tr><td><strong>CLOSED</strong></td><td>Conexión terminada</td></tr>
+        </table>
+
+        <div class="info-box concept">
+          <div class="info-box-label">SEGURIDAD</div>
+          <p>Un <strong>SYN Flood</strong> es un ataque DoS que envía miles de paquetes SYN sin completar el handshake, llenando la tabla de conexiones en estado SYN_RECEIVED hasta agotar los recursos del servidor.</p>
+        </div>
+      </section>
+
+      <!-- ── TCP vs UDP ── -->
+      <section id="tcp-udp">
+        <h3>Sub-concepto: TCP vs UDP</h3>
+        <p>Son los dos protocolos de transporte principales. La diferencia clave: TCP garantiza la entrega, UDP no.</p>
+
+        <table>
+          <tr><th>Característica</th><th>TCP</th><th>UDP</th></tr>
+          <tr><td>Confiabilidad</td><td style="color:var(--green)">Garantizada (retransmite si hay pérdida)</td><td style="color:var(--orange)">No garantizada</td></tr>
+          <tr><td>Orden</td><td style="color:var(--green)">Entrega en orden</td><td style="color:var(--orange)">Sin orden garantizado</td></tr>
+          <tr><td>Velocidad</td><td style="color:var(--orange)">Más lento (overhead)</td><td style="color:var(--green)">Más rápido (mínimo overhead)</td></tr>
+          <tr><td>Conexión</td><td>Orientado a conexión (handshake)</td><td>Sin conexión (connectionless)</td></tr>
+          <tr><td>Usos</td><td>HTTP/S, SSH, FTP, correo</td><td>DNS, streaming, gaming, VoIP</td></tr>
+        </table>
+
+        <div class="info-box fact">
+          <div class="info-box-label">ANALOGÍA</div>
+          <p><strong>TCP</strong> es como enviar una carta certificada: el cartero confirma la entrega y si no llegó, la re-envía.<br><strong>UDP</strong> es como lanzar panfletos desde un avión: llegan rápido, pero no sabés cuántos llegaron ni en qué orden.</p>
+        </div>
+      </section>
+    </section>
+
+    <!-- ══════════ NSLOOKUP ══════════ -->
+    <section class="chapter" id="nslookup">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 05</div>
+        <h2 class="chapter-title">NSLOOKUP / DIG <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">El sistema telefónico de Internet: DNS.</p>
+      </div>
+
+      <p><strong>NSLOOKUP</strong> (Name Server Lookup) y <strong>DIG</strong> (Domain Information Groper) consultan el sistema DNS para resolver nombres de dominio. DIG es más potente y detallado, preferido en Linux para diagnósticos avanzados.</p>
+
+      <div class="code-block"><span class="info">$ dig google.com</span>
+
+; <<>> DiG 9.18.1 <<>> google.com
+;; ANSWER SECTION:
+<span class="success">google.com.    300    IN    A    142.250.184.78</span>   <span class="comment">← IP de Google</span>
+
+;; Query time: 12 msec                               <span class="comment">← tardó 12ms en resolver</span>
+;; SERVER: 8.8.8.8#53(8.8.8.8)                      <span class="comment">← usó el DNS de Google para resolver</span>
+
+<span class="info">$ dig gmail.com MX</span>
+;; ANSWER SECTION:
+<span class="success">gmail.com.    3600    IN    MX    10    aspmx.l.google.com.</span>
+<span class="success">gmail.com.    3600    IN    MX    20    alt1.aspmx.l.google.com.</span></div>
+
+      <!-- ── DNS ── -->
+      <section id="dns">
+        <h3>Sub-concepto: Cómo funciona DNS</h3>
+        <p><strong>DNS</strong> (Domain Name System) es la "guía telefónica" de Internet. Traduce nombres legibles como <code>google.com</code> a direcciones IP que las computadoras entienden como <code>142.250.184.78</code>.</p>
+
+        <p>Es un sistema jerárquico y distribuido: no hay un único servidor que sabe todo, sino una cadena de servidores que se consultan entre sí.</p>
+
+        <div class="diagram">  Escribís: www.google.com
+
+  1. Tu PC pregunta a su DNS Resolver (8.8.8.8 o el del router)
+     ↓
+  2. El Resolver pregunta al Root Server (.)
+     "¿Quién sabe sobre .com?"
+     ↓
+  3. Root Server responde: "Preguntale a los TLD Servers del .com"
+     ↓
+  4. Resolver pregunta al TLD Server del .com
+     "¿Quién sabe sobre google.com?"
+     ↓
+  5. TLD Server responde: "Preguntale al Authoritative Server de Google"
+     ↓
+  6. Resolver pregunta al servidor autoritativo de Google
+     "¿Cuál es la IP de www.google.com?"
+     ↓
+  7. Google responde: "Es 142.250.184.78"
+     ↓
+  8. El Resolver te responde y guarda en caché por el tiempo del TTL</div>
+
+        <div class="info-box fact">
+          <div class="info-box-label">DATO INTERESANTE</div>
+          <p>Solo hay <strong>13 grupos de Root Servers</strong> (A hasta M), pero cada grupo tiene cientos de servidores físicos distribuidos por todo el mundo via <strong>Anycast</strong>. Son los servidores más críticos de Internet: si todos cayeran, nadie podría resolver nombres de dominio.</p>
+        </div>
+
+        <div class="info-box concept">
+          <div class="info-box-label">DNS CACHE POISONING</div>
+          <p>Un ataque donde un atacante logra que el resolver DNS guarde en caché una respuesta falsa. Así cuando escribís <code>banco.com</code>, tu DNS resuelve a una IP maliciosa en vez de la real. Por eso existe <strong>DNSSEC</strong> (DNS Security Extensions).</p>
+        </div>
+      </section>
+
+      <!-- ── REGISTROS ── -->
+      <section id="registros">
+        <h3>Sub-concepto: Tipos de registros DNS</h3>
+        <table>
+          <tr><th>Tipo</th><th>Nombre</th><th>Para qué sirve</th><th>Ejemplo</th></tr>
+          <tr><td><strong>A</strong></td><td>Address</td><td>IP v4 del dominio</td><td>google.com → 142.250.x.x</td></tr>
+          <tr><td><strong>AAAA</strong></td><td>IPv6 Address</td><td>IP v6 del dominio</td><td>google.com → 2607:f8b0:...</td></tr>
+          <tr><td><strong>CNAME</strong></td><td>Canonical Name</td><td>Alias de otro dominio</td><td>www → midominio.com</td></tr>
+          <tr><td><strong>MX</strong></td><td>Mail Exchange</td><td>Servidores de correo</td><td>gmail.com → aspmx.l.google.com</td></tr>
+          <tr><td><strong>NS</strong></td><td>Name Server</td><td>Servidores DNS autoritativos</td><td>google.com → ns1.google.com</td></tr>
+          <tr><td><strong>TXT</strong></td><td>Text</td><td>Verificaciones SPF, DKIM, propiedad</td><td>v=spf1 include:...</td></tr>
+          <tr><td><strong>PTR</strong></td><td>Pointer</td><td>DNS inverso (IP → nombre)</td><td>142.250.184.78 → lax.google.com</td></tr>
+          <tr><td><strong>SOA</strong></td><td>Start of Authority</td><td>Info del servidor DNS primario</td><td>Administrador de zona</td></tr>
+        </table>
+      </section>
+    </section>
+
+    <!-- ══════════ ARP ══════════ -->
+    <section class="chapter" id="arp-cap">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 06</div>
+        <h2 class="chapter-title">ARP <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">El puente entre la dirección IP y la dirección física.</p>
+      </div>
+
+      <p><strong>ARP</strong> (Address Resolution Protocol, RFC 826) resuelve el problema de: "Sé la IP del dispositivo, pero ¿cuál es su dirección MAC para poder enviarle el frame Ethernet?"</p>
+
+      <section id="arp-proto">
+        <h3>Sub-concepto: Cómo funciona ARP</h3>
+        <p>Cuando tu PC quiere enviar un paquete a una IP en su misma red local, necesita la MAC de ese destino para armar el frame de Ethernet. Si no la tiene en caché, ejecuta una consulta ARP:</p>
+
+        <div class="diagram">  Tu PC (192.168.1.100) quiere hablar con 192.168.1.50
+
+  ARP REQUEST (broadcast):
+  "Hola a TODOS en la red: ¿Quién tiene la IP 192.168.1.50?
+   Soy 192.168.1.100 con MAC A4:B1:C7:3F:22:09"
+                              ↓ (va a FF:FF:FF:FF:FF:FF — todos escuchan)
+  ARP REPLY (unicast):
+  "¡Yo! Soy 192.168.1.50 y mi MAC es DC:A6:32:9F:AA:11"
+                              ↓
+  Tu PC guarda en la tabla ARP: 192.168.1.50 → DC:A6:32:9F:AA:11
+  (Esta entrada dura ~2 minutos antes de expirar)</div>
+
+        <div class="code-block"><span class="info">C:\> arp -a</span>
+
+Interfaz: 192.168.1.100 --- 0x4
+  Dirección de Internet    Dirección física      Tipo
+  <span class="success">192.168.1.1              a4-b1-c7-3f-22-01     dinámico</span>   <span class="comment">← router</span>
+  <span class="success">192.168.1.102            dc-a6-32-9f-aa-11     dinámico</span>   <span class="comment">← otro PC</span>
+  <span class="highlight">192.168.1.255            ff-ff-ff-ff-ff-ff     estático</span>   <span class="comment">← broadcast</span></div>
+      </section>
+
+      <section id="arp-spoof">
+        <h3>Sub-concepto: ARP Spoofing / ARP Poisoning</h3>
+        <p>El protocolo ARP tiene un problema de seguridad fundamental: <strong>no tiene autenticación</strong>. Cualquier dispositivo puede enviar una respuesta ARP no solicitada, y los demás la aceptarán y actualizarán su tabla.</p>
+
+        <p>Un atacante puede explotar esto con <strong>ARP Spoofing</strong>: enviar respuestas ARP falsas asociando su propia MAC a la IP del gateway, haciendo que todo el tráfico de la víctima pase por el atacante primero.</p>
+
+        <div class="diagram">  SIN ATAQUE:
+  Víctima → Gateway (router) → Internet
+
+  CON ARP SPOOFING (Man-in-the-Middle):
+  Atacante envía ARP falso a la víctima:
+  "La MAC del router (192.168.1.1) es XX:XX:XX:XX:XX:XX (mi MAC)"
+
+  Resultado:
+  Víctima → Atacante → Gateway → Internet
+                ↑
+          El atacante lee/modifica todo el tráfico</div>
+
+        <div class="info-box danger">
+          <div class="info-box-label">DEFENSA</div>
+          <p><strong>Dynamic ARP Inspection (DAI)</strong> en switches administrados valida las respuestas ARP contra una tabla DHCP confiable. También se puede usar <strong>ARP estático</strong> para el gateway, o protocolos como <strong>802.1X</strong>. En redes domésticas, usar HTTPS cifra el contenido aunque el tráfico sea interceptado.</p>
+        </div>
+      </section>
+    </section>
+
+    <!-- ══════════ ROUTE ══════════ -->
+    <section class="chapter" id="route-cap">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 07</div>
+        <h2 class="chapter-title">ROUTE / IP ROUTE <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">El GPS interno de tu sistema operativo.</p>
+      </div>
+
+      <p>El comando <strong>ROUTE</strong> muestra y modifica la <em>tabla de enrutamiento</em> del sistema operativo: el mapa que decide por qué camino enviar cada paquete según su destino.</p>
+
+      <div class="code-block"><span class="info">C:\> route PRINT -4</span>
+
+Lista de interfaces
+  4...a4 b1 c7 3f 22 09  Realtek PCIe GbE Family Controller
+
+Rutas activas IPv4:
+Destino de red    Máscara de red    Puerta de enlace    Interfaz    Métrica
+<span class="success">      0.0.0.0          0.0.0.0       192.168.1.1    192.168.1.100       25</span>  <span class="comment">← ruta default</span>
+<span class="highlight">    127.0.0.0        255.0.0.0         En vínculo         127.0.0.1      331</span>  <span class="comment">← loopback</span>
+<span class="success">  192.168.1.0    255.255.255.0         En vínculo    192.168.1.100      281</span>  <span class="comment">← red local</span></div>
+
+      <section id="enrutamiento">
+        <h3>Sub-concepto: Enrutamiento</h3>
+        <p>El sistema operativo consulta la tabla de rutas para cada paquete que quiere enviar. Usa el algoritmo de <strong>Longest Prefix Match</strong>: elige la ruta más específica que coincida con el destino.</p>
+
+        <div class="diagram">  Quiero enviar un paquete a 192.168.1.50...
+
+  Tabla de rutas:
+  0.0.0.0/0     → gateway 192.168.1.1  (coincide, pero es la menos específica)
+  192.168.1.0/24 → En vínculo          (coincide Y es más específica → GANA)
+
+  Resultado: envío directo en la red local, sin pasar por el router.
+
+  ─────────────────────────────────────────────────────
+  Quiero enviar a 8.8.8.8...
+
+  192.168.1.0/24 → no coincide
+  0.0.0.0/0 → coincide (ruta por defecto) → va al GATEWAY</div>
+      </section>
+
+      <section id="cidr">
+        <h3>Sub-concepto: CIDR y Subnetting</h3>
+        <p><strong>CIDR</strong> (Classless Inter-Domain Routing) es la notación moderna para definir redes IP. El número después de la barra indica cuántos bits son para la red.</p>
+
+        <table>
+          <tr><th>Notación CIDR</th><th>Máscara equivalente</th><th>Hosts usables</th><th>Uso típico</th></tr>
+          <tr><td>/8</td><td>255.0.0.0</td><td>16.777.214</td><td>ISPs grandes</td></tr>
+          <tr><td>/16</td><td>255.255.0.0</td><td>65.534</td><td>Empresas grandes</td></tr>
+          <tr><td>/24</td><td>255.255.255.0</td><td>254</td><td>Redes hogareñas/oficina</td></tr>
+          <tr><td>/25</td><td>255.255.255.128</td><td>126</td><td>Departamentos</td></tr>
+          <tr><td>/30</td><td>255.255.255.252</td><td>2</td><td>Links punto a punto</td></tr>
+          <tr><td>/32</td><td>255.255.255.255</td><td>1</td><td>Un host específico</td></tr>
+        </table>
+      </section>
+    </section>
+
+    <!-- ══════════ NMAP ══════════ -->
+    <section class="chapter" id="nmap-cap">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 08</div>
+        <h2 class="chapter-title">NMAP <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">La navaja suiza del reconocimiento de redes.</p>
+      </div>
+
+      <p><strong>NMAP</strong> (Network Mapper) es la herramienta de escaneo de redes más utilizada en el mundo. Creada por Gordon Lyon ("Fyodor") en 1997, sigue siendo el estándar de la industria para reconocimiento de redes.</p>
+
+      <div class="info-box danger">
+        <div class="info-box-label">ÉTICO Y LEGAL</div>
+        <p>Escanear redes o sistemas sin autorización explícita es <strong>ilegal</strong> en Argentina (Ley 26.388) y en la mayoría de los países. NMAP debe usarse únicamente en redes propias, en laboratorios controlados, o en auditorías con contrato firmado.</p>
+      </div>
+
+      <section id="tcp-handshake">
+        <h3>Sub-concepto: TCP Three-Way Handshake</h3>
+        <p>Antes de entender los tipos de escaneo, hay que entender cómo TCP establece una conexión: el famoso <strong>3-way handshake</strong> (apretón de manos de tres pasos).</p>
+
+        <div class="diagram">  Cliente                              Servidor
+     │                                    │
+     │──────── SYN ──────────────────────►│  "Quiero conectarme"
+     │                                    │
+     │◄─────── SYN-ACK ──────────────────│  "Ok, te escucho. Confirmás?"
+     │                                    │
+     │──────── ACK ──────────────────────►│  "Confirmado. Conexión ESTABLISHED"
+     │                                    │
+     │◄══════ DATOS FLUYEN ══════════════►│</div>
+
+        <p>Los <strong>flags TCP</strong> son bits de control en la cabecera TCP:</p>
+        <div class="flag-list">
+          <div class="flag-item"><span class="flag-code">SYN</span><span class="flag-desc">Synchronize — inicia una conexión</span></div>
+          <div class="flag-item"><span class="flag-code">ACK</span><span class="flag-desc">Acknowledge — confirma recepción</span></div>
+          <div class="flag-item"><span class="flag-code">FIN</span><span class="flag-desc">Finish — cierra una conexión gracefully</span></div>
+          <div class="flag-item"><span class="flag-code">RST</span><span class="flag-desc">Reset — cierra una conexión abruptamente (puerto cerrado)</span></div>
+          <div class="flag-item"><span class="flag-code">PSH</span><span class="flag-desc">Push — enviar datos inmediatamente al buffer de la app</span></div>
+          <div class="flag-item"><span class="flag-code">URG</span><span class="flag-desc">Urgent — datos urgentes</span></div>
+        </div>
+      </section>
+
+      <section id="scan-types">
+        <h3>Sub-concepto: Tipos de escaneo de puertos</h3>
+
+        <h4>SYN Scan (-sS) — el más usado</h4>
+        <p>También llamado "half-open scan" o "stealth scan". Envía un SYN, si recibe SYN-ACK el puerto está abierto, y en lugar de completar el handshake envía un RST para cerrar sin establecer conexión completa. Es más sigiloso porque no queda registrado en muchos logs.</p>
+
+        <div class="diagram">  Puerto ABIERTO:   → SYN → ← SYN-ACK ← → RST → (no completa conexión)
+  Puerto CERRADO:   → SYN → ← RST ←  (respuesta inmediata)
+  Puerto FILTRADO:  → SYN → (no hay respuesta, firewall descarta silenciosamente)</div>
+
+        <h4>TCP Connect Scan (-sT)</h4>
+        <p>Completa el handshake completo. Más detectable (queda en logs), pero funciona sin privilegios de root.</p>
+
+        <h4>UDP Scan (-sU)</h4>
+        <p>Escanea puertos UDP enviando paquetes vacíos. Si recibe ICMP "Port Unreachable", el puerto está cerrado. Sin respuesta, puede estar abierto o filtrado. Es muy lento.</p>
+
+        <h4>Version Detection (-sV)</h4>
+        <p>Una vez identificados los puertos abiertos, envía probes específicos para identificar el servicio y su versión exacta. Ej: "Apache httpd 2.4.52", "OpenSSH 8.9p1".</p>
+
+        <h4>OS Detection (-O)</h4>
+        <p>Analiza pequeñas diferencias en cómo el SO responde a ciertos paquetes (TCP/IP fingerprinting) para identificar el sistema operativo. Requiere al menos un puerto abierto y uno cerrado.</p>
+
+        <div class="info-box fact">
+          <div class="info-box-label">DATO CULTURAL</div>
+          <p>NMAP apareció en varias películas: en <strong>Matrix Reloaded</strong> (2003), Trinity usa NMAP 2.54BETA25 para escanear una central eléctrica. En <strong>The Dark Knight Rises</strong> y otras películas también se ven pantallas con salidas de NMAP. Los directores las usan porque parecen "reales" (porque lo son).</p>
+        </div>
+      </section>
+    </section>
+
+    <!-- ══════════ PATHPING ══════════ -->
+    <section class="chapter" id="pathping-cap">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 09</div>
+        <h2 class="chapter-title">PATHPING / MTR <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">Estadísticas detalladas por cada salto de la ruta.</p>
+      </div>
+
+      <p><strong>PATHPING</strong> (Windows) y <strong>MTR</strong> (My Traceroute, Linux) son la evolución natural de tracert. En vez de solo mostrar los saltos una vez, envían múltiples paquetes a cada router y calculan estadísticas de pérdida y latencia para cada hop individualmente.</p>
+
+      <p>Esto permite identificar con precisión <em>en qué router específico</em> está ocurriendo la pérdida de paquetes o la latencia elevada. PATHPING primero traza la ruta (como tracert), luego envía 100 paquetes a cada salto y calcula las estadísticas.</p>
+
+      <div class="code-block"><span class="info">C:\> pathping google.com</span>
+<span class="comment">[Primero traza la ruta...]</span>
+  0  MI-PC [192.168.1.100]
+  1  192.168.1.1
+  2  200.51.12.1
+  3  72.14.215.1
+  4  142.250.184.78
+
+<span class="highlight">Calculando estadísticas durante 125 segundos...</span>
+
+          Origen a aquí   Este nodo/vínculo
+Salto  RTT    Perdido/Env  Perdido/Env  Dirección
+  1    2ms      0/100=0%     0/100=0%    192.168.1.1
+  2   15ms      0/100=0%     0/100=0%    200.51.12.1
+  3    *        3/100=3%     3/100=3%    <span class="error">72.14.215.1  ← 3% de pérdida aquí</span>
+  4   25ms      3/100=3%     0/100=0%    142.250.184.78</div>
+
+      <p>MTR en Linux hace lo mismo pero en <strong>tiempo real</strong>, actualizando las estadísticas constantemente mientras corre.</p>
+    </section>
+
+    <!-- ══════════ NETSH ══════════ -->
+    <section class="chapter" id="netsh-cap">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 10</div>
+        <h2 class="chapter-title">NETSH / NMCLI <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">Administración avanzada de red desde la línea de comandos.</p>
+      </div>
+
+      <p><strong>NETSH</strong> (Network Shell) es la herramienta de configuración de red más potente de Windows. Es un shell interactivo o se puede usar con comandos directos. Permite configurar prácticamente todo lo relacionado con la red.</p>
+
+      <h3>Contextos principales de NETSH</h3>
+      <table>
+        <tr><th>Contexto</th><th>Para qué sirve</th></tr>
+        <tr><td><code>netsh interface</code></td><td>Configurar interfaces de red (IP, DNS)</td></tr>
+        <tr><td><code>netsh wlan</code></td><td>Gestionar redes WiFi, perfiles, contraseñas</td></tr>
+        <tr><td><code>netsh advfirewall</code></td><td>Configurar el firewall de Windows</td></tr>
+        <tr><td><code>netsh int ip</code></td><td>Configuración IP de interfaces</td></tr>
+        <tr><td><code>netsh http</code></td><td>Configurar el servidor HTTP de Windows</td></tr>
+      </table>
+
+      <h3>Comando conocido: ver contraseñas WiFi</h3>
+      <div class="code-block"><span class="info">C:\> netsh wlan show profiles</span>
+<span class="comment"># Lista todas las redes WiFi que guardó tu equipo alguna vez</span>
+
+<span class="info">C:\> netsh wlan show profile name="MiRedWiFi" key=clear</span>
+<span class="comment"># Muestra la contraseña en texto plano</span>
+   Tipo de autenticación : WPA2-Personal
+   Tipo de cifrado      : CCMP
+   <span class="highlight">Contenido de clave   : M1P4ssword2026</span>    <span class="comment">← ahí está la clave</span></code></div>
+
+      <div class="info-box concept">
+        <div class="info-box-label">¿POR QUÉ FUNCIONA?</div>
+        <p>Windows guarda los perfiles WiFi cifrados en el registro del sistema, pero los descifra para mostrártelos si tenés permisos de administrador. Las claves se almacenan con <strong>DPAPI</strong> (Data Protection API), vinculadas al usuario del sistema. Por eso este comando requiere CMD como administrador.</p>
+      </div>
+
+      <h3>NMCLI en Linux</h3>
+      <p><strong>NMCLI</strong> es la CLI de NetworkManager, el gestor de red estándar en distribuciones modernas de Linux. Permite gestionar conexiones de forma persistente (sobreviven reinicios).</p>
+
+      <div class="code-block"><span class="info">$ nmcli connection show</span>          <span class="comment"># lista conexiones guardadas</span>
+<span class="info">$ nmcli device status</span>               <span class="comment"># estado de interfaces</span>
+<span class="info">$ nmcli device wifi list</span>            <span class="comment"># redes WiFi disponibles</span>
+<span class="info">$ nmcli device wifi connect "MiRed" password "clave"</span>  <span class="comment"># conectarse a WiFi</span></div>
+    </section>
+
+    <!-- ══════════ CURL ══════════ -->
+    <section class="chapter" id="curl-cap">
+      <div class="chapter-header">
+        <div class="chapter-num">COMANDO 11</div>
+        <h2 class="chapter-title">CURL / WGET <span class="ch-tag ch-both">WIN + LINUX</span></h2>
+        <p class="chapter-subtitle">HTTP desde la terminal: el navegador sin interfaz gráfica.</p>
+      </div>
+
+      <p><strong>CURL</strong> (Client URL) es una biblioteca y herramienta de transferencia de datos que soporta más de 25 protocolos: HTTP, HTTPS, FTP, SMTP, SFTP, y más. Es indispensable para desarrolladores y para testing de APIs.</p>
+
+      <p><strong>WGET</strong> es más simple pero muy efectivo para descargas, especialmente con la capacidad de continuar descargas interrumpidas (<code>-c</code>) y hacer mirrors de sitios web (<code>-r</code>).</p>
+
+      <div class="code-block"><span class="info">$ curl -I https://google.com</span>    <span class="comment"># solo headers HTTP</span>
+HTTP/2 301
+location: https://www.google.com/
+content-type: text/html; charset=UTF-8
+<span class="highlight">strict-transport-security: max-age=31536000</span>   <span class="comment">← HSTS habilitado</span>
+
+<span class="info">$ curl -X POST https://api.ejemplo.com/users \</span>
+<span class="info">     -H "Content-Type: application/json" \</span>
+<span class="info">     -H "Authorization: Bearer TOKEN" \</span>
+<span class="info">     -d '{"nombre": "Ana", "email": "ana@test.com"}'</span>
+
+<span class="info">$ curl https://api.ipify.org</span>      <span class="comment"># ver mi IP pública</span>
+<span class="success">203.0.113.42</span></div>
+
+      <section id="http">
+        <h3>Sub-concepto: HTTP y HTTPS</h3>
+        <p><strong>HTTP</strong> (HyperText Transfer Protocol) es el protocolo de la web. Define cómo un cliente (navegador) solicita recursos a un servidor y cómo el servidor responde.</p>
+
+        <h4>Métodos HTTP</h4>
+        <table>
+          <tr><th>Método</th><th>Para qué sirve</th></tr>
+          <tr><td>GET</td><td>Obtener un recurso (página, datos)</td></tr>
+          <tr><td>POST</td><td>Enviar datos al servidor (crear)</td></tr>
+          <tr><td>PUT</td><td>Actualizar un recurso completo</td></tr>
+          <tr><td>PATCH</td><td>Actualizar parcialmente un recurso</td></tr>
+          <tr><td>DELETE</td><td>Eliminar un recurso</td></tr>
+          <tr><td>HEAD</td><td>Como GET pero solo headers (sin body)</td></tr>
+          <tr><td>OPTIONS</td><td>Ver qué métodos acepta el servidor</td></tr>
+        </table>
+
+        <h4>Códigos de estado HTTP</h4>
+        <table>
+          <tr><th>Rango</th><th>Categoría</th><th>Ejemplos</th></tr>
+          <tr><td>1xx</td><td>Informacional</td><td>100 Continue</td></tr>
+          <tr><td>2xx</td><td>Éxito</td><td>200 OK, 201 Created, 204 No Content</td></tr>
+          <tr><td>3xx</td><td>Redirección</td><td>301 Moved, 302 Found, 304 Not Modified</td></tr>
+          <tr><td>4xx</td><td>Error del cliente</td><td>400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found</td></tr>
+          <tr><td>5xx</td><td>Error del servidor</td><td>500 Internal Error, 502 Bad Gateway, 503 Service Unavailable</td></tr>
+        </table>
+
+        <h4>HTTPS = HTTP + TLS</h4>
+        <p><strong>HTTPS</strong> agrega una capa de cifrado TLS (Transport Layer Security) sobre HTTP. Esto garantiza:</p>
+        <ul style="margin:0.5rem 0 1rem 1.5rem;color:var(--text)">
+          <li><strong>Confidencialidad</strong>: nadie puede leer el tráfico aunque lo intercepte</li>
+          <li><strong>Integridad</strong>: nadie puede modificar los datos en tránsito</li>
+          <li><strong>Autenticación</strong>: el certificado SSL/TLS prueba que el servidor es quien dice ser</li>
+        </ul>
+
+        <div class="info-box fact">
+          <div class="info-box-label">DATO INTERESANTE</div>
+          <p>El <strong>candado verde</strong> en el navegador solo significa que la conexión está cifrada, NO que el sitio es confiable. Un sitio de phishing también puede tener HTTPS con certificado válido. El certificado solo prueba que ese dominio es tuyo, no que tus intenciones son buenas.</p>
+        </div>
+      </section>
+    </section>
+
+    <hr class="sep">
+
+    <!-- ══════════ GLOSARIO ══════════ -->
+    <section class="chapter" id="glosario">
+      <div class="chapter-header">
+        <div class="chapter-num">APÉNDICE</div>
+        <h2 class="chapter-title">Glosario de términos</h2>
+        <p class="chapter-subtitle">Referencia rápida de todos los conceptos mencionados.</p>
+      </div>
+
+      <table>
+        <tr><th>Término</th><th>Definición</th></tr>
+        <tr><td><strong>ACK</strong></td><td>Flag TCP de confirmación. Indica que el paquete anterior fue recibido.</td></tr>
+        <tr><td><strong>ARP</strong></td><td>Protocolo que traduce IPs a MACs dentro de la red local.</td></tr>
+        <tr><td><strong>Broadcast</strong></td><td>Mensaje enviado a todos los dispositivos de la red (IP .255, MAC FF:FF:FF:FF:FF:FF).</td></tr>
+        <tr><td><strong>CIDR</strong></td><td>Notación /X para indicar el tamaño de una red (ej: 192.168.1.0/24).</td></tr>
+        <tr><td><strong>DHCP</strong></td><td>Protocolo que asigna IPs automáticamente a los dispositivos.</td></tr>
+        <tr><td><strong>DNS</strong></td><td>Sistema que traduce nombres de dominio a IPs (guía telefónica de internet).</td></tr>
+        <tr><td><strong>DNSSEC</strong></td><td>Extensión de seguridad para DNS que autentifica las respuestas.</td></tr>
+        <tr><td><strong>Firewall</strong></td><td>Sistema que filtra tráfico de red según reglas definidas.</td></tr>
+        <tr><td><strong>Gateway</strong></td><td>Router que conecta tu red local con otras redes (internet).</td></tr>
+        <tr><td><strong>Hop</strong></td><td>Cada router que atraviesa un paquete en su camino al destino.</td></tr>
+        <tr><td><strong>HTTP</strong></td><td>Protocolo de transferencia de hipertexto. Base de la web.</td></tr>
+        <tr><td><strong>HTTPS</strong></td><td>HTTP con cifrado TLS. Asegura confidencialidad e integridad.</td></tr>
+        <tr><td><strong>ICMP</strong></td><td>Protocolo de mensajes de control. Usado por ping y tracert.</td></tr>
+        <tr><td><strong>IP</strong></td><td>Dirección única de un dispositivo en la red.</td></tr>
+        <tr><td><strong>IPv4</strong></td><td>Versión 4 del protocolo IP. 32 bits, ~4 mil millones de IPs.</td></tr>
+        <tr><td><strong>IPv6</strong></td><td>Versión 6. 128 bits, prácticamente ilimitadas IPs.</td></tr>
+        <tr><td><strong>Jitter</strong></td><td>Variación en la latencia de paquetes consecutivos.</td></tr>
+        <tr><td><strong>LAN</strong></td><td>Local Area Network. Red local (tu casa, oficina).</td></tr>
+        <tr><td><strong>Latencia</strong></td><td>Tiempo de ida y vuelta de un paquete (RTT). En milisegundos.</td></tr>
+        <tr><td><strong>MAC</strong></td><td>Dirección física única de cada interfaz de red.</td></tr>
+        <tr><td><strong>MITM</strong></td><td>Man-in-the-Middle. Ataque donde el atacante intercepta comunicaciones.</td></tr>
+        <tr><td><strong>NAT</strong></td><td>Network Address Translation. Permite compartir una IP pública entre múltiples dispositivos.</td></tr>
+        <tr><td><strong>Netmask</strong></td><td>Máscara de subred. Define el tamaño de la red.</td></tr>
+        <tr><td><strong>OSI</strong></td><td>Modelo de referencia de 7 capas para comunicaciones de red.</td></tr>
+        <tr><td><strong>Paquete</strong></td><td>Unidad de datos transmitida por la red, con header y payload.</td></tr>
+        <tr><td><strong>Ping</strong></td><td>Herramienta que verifica conectividad usando ICMP Echo.</td></tr>
+        <tr><td><strong>Port</strong></td><td>Número 0-65535 que identifica un servicio específico en un host.</td></tr>
+        <tr><td><strong>Protocolo</strong></td><td>Conjunto de reglas que define cómo se comunican los dispositivos.</td></tr>
+        <tr><td><strong>Router</strong></td><td>Dispositivo que reenvía paquetes entre redes distintas.</td></tr>
+        <tr><td><strong>RTT</strong></td><td>Round Trip Time. Tiempo ida+vuelta de un paquete.</td></tr>
+        <tr><td><strong>Socket</strong></td><td>Combinación de IP + Puerto que identifica un extremo de comunicación.</td></tr>
+        <tr><td><strong>SSH</strong></td><td>Secure Shell. Protocolo de acceso remoto cifrado (puerto 22).</td></tr>
+        <tr><td><strong>SSL/TLS</strong></td><td>Protocolos de cifrado de comunicaciones. HTTPS usa TLS.</td></tr>
+        <tr><td><strong>Subnet</strong></td><td>Subdivisión de una red IP. Agrupa dispositivos relacionados.</td></tr>
+        <tr><td><strong>SYN</strong></td><td>Flag TCP que inicia una conexión. Primer paso del handshake.</td></tr>
+        <tr><td><strong>TCP</strong></td><td>Protocolo de transporte confiable, orientado a conexión.</td></tr>
+        <tr><td><strong>TLS</strong></td><td>Transport Layer Security. Sucesor de SSL. Cifra las comunicaciones.</td></tr>
+        <tr><td><strong>TTL</strong></td><td>Time To Live. Contador de saltos que evita loops infinitos de paquetes.</td></tr>
+        <tr><td><strong>UDP</strong></td><td>Protocolo de transporte rápido, sin confirmación de entrega.</td></tr>
+        <tr><td><strong>Unicast</strong></td><td>Comunicación de uno a uno (IP específica a IP específica).</td></tr>
+        <tr><td><strong>VPN</strong></td><td>Virtual Private Network. Túnel cifrado sobre internet.</td></tr>
+        <tr><td><strong>WAN</strong></td><td>Wide Area Network. Red de área amplia (internet).</td></tr>
+        <tr><td><strong>WiFi</strong></td><td>Tecnología de red inalámbrica (IEEE 802.11).</td></tr>
+      </table>
+
+      <div style="margin-top:3rem;padding:1.5rem;border:1px solid var(--green4);background:var(--card)">
+        <p style="font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--green3);letter-spacing:1px;">
+          &gt; FIN DE LA DOCUMENTACIÓN — NET//THEORY v1.0<br>
+          &gt; Para practicar los comandos: <a href="index.html" style="color:var(--green)">SIMULADOR INTERACTIVO →</a>
+        </p>
+      </div>
+    </section>
+
+  </div><!-- /content-wrap -->
+</main>
+
+<script>
+// ── SCROLL PROGRESS BAR ──
+window.addEventListener('scroll', () => {
+  const main = document.getElementById('main');
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = (window.scrollY / scrollable) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Active nav item
+  const sections = document.querySelectorAll('[id]');
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+
+  document.querySelectorAll('.nav-item, .nav-sub').forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+
+// ── SIDEBAR SEARCH ──
+function searchNav(val) {
+  const items = document.querySelectorAll('.nav-item, .nav-sub, .nav-group-title');
+  if (!val) { items.forEach(i => i.style.display = ''); return; }
+  const q = val.toLowerCase();
+  document.querySelectorAll('.nav-group').forEach(g => {
+    const links = g.querySelectorAll('.nav-item, .nav-sub');
+    let any = false;
+    links.forEach(l => {
+      const match = l.textContent.toLowerCase().includes(q);
+      l.style.display = match ? '' : 'none';
+      if (match) any = true;
+    });
+    g.querySelector('.nav-group-title').style.display = any ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
