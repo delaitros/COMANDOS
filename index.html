@@ -762,6 +762,7 @@ footer {
       <li><a href="#comandos" onclick="setActive(this)">[ COMANDOS ]</a></li>
       <li><a href="#simulator" onclick="setActive(this)">[ TERMINAL ]</a></li>
       <li><a href="#tp" onclick="setActive(this)">[ TP PRÁCTICO ]</a></li>
+      <li><a href="teoria.html" style="color:var(--cyan);border-color:var(--cyan)">[ TEORÍA COMPLETA ]</a></li>
     </ul>
   </div>
 </nav>
@@ -921,10 +922,12 @@ const commands = [
     syntax_win: 'ping [opciones] <host>',
     syntax_linux: 'ping [opciones] <host>',
     theory: `PING (Packet Internet Groper) envía paquetes ICMP Echo Request al host destino y espera respuestas ICMP Echo Reply. Mide el tiempo de ida y vuelta (RTT - Round Trip Time) en milisegundos.
+
 Información que entrega:
 • Tiempo de respuesta (ms) — latencia
 • TTL (Time To Live) — saltos máximos antes de descartar el paquete
 • Paquetes enviados/recibidos/perdidos — % de pérdida
+
 Usos clave: verificar si un host está activo, medir latencia, detectar pérdida de paquetes, diagnosticar problemas de red.`,
     examples: [
       { cmd_win: 'ping 8.8.8.8', cmd_linux: 'ping 8.8.8.8', desc: 'Ping a DNS de Google' },
@@ -941,11 +944,13 @@ Usos clave: verificar si un host está activo, medir latencia, detectar pérdida
     syntax_win: 'tracert [opciones] <host>',
     syntax_linux: 'traceroute [opciones] <host>',
     theory: `TRACERT (Windows) / TRACEROUTE (Linux) muestra cada router (salto/hop) que atraviesa un paquete desde tu PC hasta el destino. Usa ICMP con TTL incremental: envía paquetes con TTL=1, 2, 3... Cada router decrementa el TTL y cuando llega a 0 responde con "TTL Exceeded", revelando su identidad.
+
 Por cada salto muestra:
 • Número de salto
 • IP o hostname del router
 • 3 mediciones de latencia (ms)
 • Asteriscos (*) si el router no responde (firewall)
+
 Usos: identificar dónde se cae la conexión, ver qué ISPs se usan, detectar cuellos de botella.`,
     examples: [
       { cmd_win: 'tracert google.com', cmd_linux: 'traceroute google.com', desc: 'Ruta a Google' },
@@ -961,6 +966,7 @@ Usos: identificar dónde se cae la conexión, ver qué ISPs se usan, detectar cu
     syntax_win: 'ipconfig [/all | /release | /renew | /flushdns]',
     syntax_linux: 'ip addr show  |  ifconfig',
     theory: `IPCONFIG (Windows) e IFCONFIG/IP ADDR (Linux) muestran la configuración de todas las interfaces de red del sistema.
+
 Información clave que muestran:
 • Dirección IPv4 e IPv6
 • Máscara de subred (Subnet Mask)
@@ -968,6 +974,7 @@ Información clave que muestran:
 • Dirección MAC (solo con /all en Windows)
 • Servidor DNS
 • Estado DHCP (dinámico o estático)
+
 Comandos útiles Windows:
   ipconfig /all — detalles completos
   ipconfig /release — libera IP del DHCP
@@ -988,11 +995,13 @@ Comandos útiles Windows:
     syntax_win: 'netstat [opciones]',
     syntax_linux: 'netstat [opciones]  |  ss [opciones]',
     theory: `NETSTAT (Network Statistics) muestra todas las conexiones TCP/UDP activas, puertos en escucha y estadísticas de red. Es esencial para detectar conexiones sospechosas o malware.
+
 Estados importantes de TCP:
 • LISTENING — Puerto abierto esperando conexiones
 • ESTABLISHED — Conexión activa en curso
 • TIME_WAIT — Conexión cerrándose
 • CLOSE_WAIT — Lado remoto cerró la conexión
+
 Flags útiles:
   -a : todas las conexiones y puertos
   -n : IPs en formato numérico (sin DNS)
@@ -1013,6 +1022,7 @@ Flags útiles:
     syntax_win: 'nslookup [host] [servidor-dns]',
     syntax_linux: 'nslookup [host]  |  dig [host] [tipo]',
     theory: `NSLOOKUP y DIG consultan servidores DNS para resolver nombres de dominio a IPs y viceversa (DNS inverso). DIG (Domain Information Groper) es más potente y detallado.
+
 Tipos de registros DNS:
 • A — IPv4 del dominio
 • AAAA — IPv6 del dominio
@@ -1021,6 +1031,7 @@ Tipos de registros DNS:
 • CNAME — Alias de dominio
 • TXT — Texto (verificaciones SPF, DKIM)
 • PTR — DNS inverso (IP → nombre)
+
 Usos: verificar propagación DNS, encontrar servidores de correo, auditoría de dominios, detección de CDN.`,
     examples: [
       { cmd_win: 'nslookup google.com', cmd_linux: 'dig google.com', desc: 'Resolución básica A record' },
@@ -1037,11 +1048,15 @@ Usos: verificar propagación DNS, encontrar servidores de correo, auditoría de 
     syntax_win: 'arp -a | -d | -s',
     syntax_linux: 'arp -a  |  ip neigh',
     theory: `ARP (Address Resolution Protocol) traduce direcciones IP a direcciones MAC dentro de una red local (LAN). Cuando tu PC quiere enviar datos a 192.168.1.5, pregunta "¿quién tiene esta IP?" y el dispositivo responde con su MAC.
+
 La tabla ARP cachea estas relaciones IP↔MAC para evitar consultas repetidas.
+
 Tipos de entradas:
 • Dinámica — aprendida automáticamente, expira
 • Estática — configurada manualmente, permanente
+
 Seguridad: ARP Spoofing/Poisoning es un ataque donde un atacante envía respuestas ARP falsas para redirigir tráfico (Man-in-the-Middle).
+
 Comandos:
   arp -a : muestra tabla completa
   arp -d <IP> : elimina una entrada
@@ -1060,13 +1075,16 @@ Comandos:
     syntax_win: 'route PRINT | ADD | DELETE | CHANGE',
     syntax_linux: 'ip route  |  route -n',
     theory: `La tabla de enrutamiento define cómo el sistema decide por qué interfaz enviar paquetes hacia distintas redes. Es el "mapa de rutas" del SO.
+
 Componentes de una ruta:
 • Destino — red o IP de destino
 • Máscara — define el rango de red
 • Gateway — siguiente salto (router)
 • Interfaz — por dónde sale el paquete
 • Métrica — costo de la ruta (menor = preferida)
+
 La ruta 0.0.0.0/0 (o default) es la ruta por defecto: si ninguna otra coincide, el paquete va por ahí (al gateway de internet).
+
 Útil para: agregar rutas a redes privadas (VPN), solucionar problemas de enrutamiento, configurar rutas estáticas.`,
     examples: [
       { cmd_win: 'route PRINT', cmd_linux: 'ip route show', desc: 'Ver tabla de rutas completa' },
@@ -1082,6 +1100,7 @@ La ruta 0.0.0.0/0 (o default) es la ruta por defecto: si ninguna otra coincide, 
     syntax_win: 'nmap [opciones] <objetivo>',
     syntax_linux: 'nmap [opciones] <objetivo>',
     theory: `NMAP (Network Mapper) es la herramienta de escaneo de redes más utilizada en seguridad informática. Permite descubrir hosts activos, puertos abiertos, servicios en ejecución, versiones de software y sistemas operativos.
+
 Tipos de escaneo principales:
 • -sS (SYN Scan) — sigiloso, no completa TCP handshake
 • -sT (TCP Connect) — escaneo completo, más detectable
@@ -1089,6 +1108,7 @@ Tipos de escaneo principales:
 • -sV (Version Detection) — detecta versión del servicio
 • -O (OS Detection) — intenta detectar el SO
 • -A (Agresivo) — combina OS, versiones, scripts, traceroute
+
 ⚠️ ÉTICO: Solo usar en redes propias o con autorización explícita.`,
     examples: [
       { cmd_win: 'nmap 192.168.1.1', cmd_linux: 'nmap 192.168.1.1', desc: 'Escaneo básico de puertos' },
@@ -1105,11 +1125,13 @@ Tipos de escaneo principales:
     syntax_win: 'pathping [opciones] <host>',
     syntax_linux: 'mtr [opciones] <host>',
     theory: `PATHPING (Windows) y MTR (Linux) combinan las capacidades de TRACERT y PING en una sola herramienta. Primero traza la ruta completa y luego envía múltiples paquetes a cada salto para calcular estadísticas de pérdida de paquetes y latencia.
+
 Ventajas sobre tracert:
 • Detecta routers que tienen alta pérdida de paquetes
 • Identifica con precisión dónde ocurren los problemas
 • Muestra estadísticas acumuladas por salto
 • MTR (Linux) actualiza en tiempo real
+
 Muy útil para: ISPs que afirman no tener problemas, detectar cuellos de botella específicos en la ruta, reportar problemas a tu proveedor.`,
     examples: [
       { cmd_win: 'pathping google.com', cmd_linux: 'mtr google.com', desc: 'Análisis completo de ruta' },
@@ -1125,12 +1147,15 @@ Muy útil para: ISPs que afirman no tener problemas, detectar cuellos de botella
     syntax_win: 'hostname  |  whoami  |  whoami /all',
     syntax_linux: 'hostname  |  hostname -I  |  whoami',
     theory: `HOSTNAME muestra el nombre NetBIOS/DNS del equipo en la red. Es el identificador del sistema dentro del dominio o workgroup.
+
 WHOAMI (Windows) muestra información del usuario actual:
 • whoami — usuario\\dominio
 • whoami /groups — grupos del usuario
 • whoami /priv — privilegios actuales
 • whoami /all — todo lo anterior
+
 En Linux, hostname también puede mostrar la IP del equipo con el flag -I, lo que es muy útil para conocer rápidamente todas las IPs asignadas sin usar ipconfig/ifconfig.
+
 En auditorías de seguridad, whoami /priv es crucial para evaluar posibilidades de escalada de privilegios.`,
     examples: [
       { cmd_win: 'hostname', cmd_linux: 'hostname', desc: 'Nombre del equipo' },
@@ -1146,12 +1171,15 @@ En auditorías de seguridad, whoami /priv es crucial para evaluar posibilidades 
     syntax_win: 'netsh [contexto] [comando]',
     syntax_linux: 'nmcli [opciones]',
     theory: `NETSH (Windows) es una herramienta de administración de red muy potente. Permite configurar interfaces, firewall, WiFi, y más desde la terminal.
+
 Contextos principales de netsh:
 • netsh interface — gestión de interfaces
 • netsh wlan — gestión de redes inalámbricas
 • netsh advfirewall — gestión del firewall
 • netsh int ip — configuración IP
+
 Uso muy conocido: netsh wlan show profiles muestra todas las redes WiFi guardadas, y netsh wlan show profile [nombre] key=clear revela la contraseña en texto plano.
+
 NMCLI (Linux) es la interfaz CLI de NetworkManager para gestionar conexiones de red de forma persistente.`,
     examples: [
       { cmd_win: 'netsh wlan show profiles', cmd_linux: 'nmcli connection show', desc: 'Ver perfiles WiFi guardados' },
@@ -1167,13 +1195,16 @@ NMCLI (Linux) es la interfaz CLI de NetworkManager para gestionar conexiones de 
     syntax_win: 'curl [opciones] <URL>',
     syntax_linux: 'curl [opciones] <URL>  |  wget <URL>',
     theory: `CURL (Client URL) es una herramienta de transferencia de datos que soporta HTTP, HTTPS, FTP, SMTP, y más de 20 protocolos. Indispensable para pruebas de APIs y diagnósticos web.
+
 Usos comunes:
 • Probar APIs REST (GET, POST, PUT, DELETE)
 • Ver headers HTTP de respuesta
 • Descargar archivos
 • Enviar datos de formularios
 • Probar certificados SSL
+
 WGET es más simple pero muy efectivo para descargas, especialmente recursivas (mirrors de sitios).
+
 En ciberseguridad, curl es esencial para probar vulnerabilidades web, inyecciones, y analizar respuestas HTTP manualmente.`,
     examples: [
       { cmd_win: 'curl https://api.ipify.org', cmd_linux: 'curl https://api.ipify.org', desc: 'Ver mi IP pública' },
